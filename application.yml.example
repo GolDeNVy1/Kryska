@@ -24,8 +24,8 @@ plugins:
       youtube: false # Enable YouTube lyrics source
       yandexmusic: false # Enable Yandex Music lyrics source
     spotify:
-      clientId: "a5f4944f8cc743869c2b230174c9f093"
-      clientSecret: "7fa25499679f4fdea12075eb35fb444e"
+      clientId: ""
+      clientSecret: ""
       spDc: "your sp dc cookie" # the sp dc cookie used for accessing the spotify lyrics api
       countryCode: "US" # the country code you want to use for filtering the artists top tracks. See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
       playlistLoadLimit: 6 # The number of pages at 100 tracks each
@@ -33,11 +33,11 @@ plugins:
       localFiles: true # Enable local files support with Spotify playlists. Please note `uri` & `isrc` will be `null` & `identifier` will be `"local"`
     applemusic:
       countryCode: "US" # the country code you want to use for filtering the artists top tracks and language. See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
-      mediaAPIToken: "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzI4OTM2OTg2LCJleHAiOjE3MzYxOTQ1ODYsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.lxj2SDTHN7CLrnFkgW9-hiYzgF3qlbS52Tfot7f88OPskJEbo9yRbzzRTlY6R_sxbxC0jxTt1ygI5VraOJNEZQ" # apple music api token
+      mediaAPIToken: "" # apple music api token
       playlistLoadLimit: 6 # The number of pages at 300 tracks each
       albumLoadLimit: 6 # The number of pages at 300 tracks each
     deezer:
-      masterDecryptionKey: "VBK1FSUEXHTSDBJJ" # the master key used for decrypting the deezer tracks. (yes this is not here you need to get it from somewhere else)
+      masterDecryptionKey: "" # the master key used for decrypting the deezer tracks. (yes this is not here you need to get it from somewhere else)
     yandexmusic:
       accessToken: "your access token" # the token used for accessing the yandex music api. See https://github.com/TopiSenpai/LavaSrc#yandex-music
       playlistLoadLimit: 1 # The number of pages at 100 tracks each
