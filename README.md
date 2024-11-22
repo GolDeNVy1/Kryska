@@ -42,7 +42,7 @@
    ```bash
    git clone https://github.com/GolDeNVy1/Kryska.git
    ```
-3. Fill out the config files (`config/lavalink.ts`, `application.yml`) with your credentials.  
+3. Fill out the config files (`application.yml` and `.env`) with your credentials.  
 4. Let Kryska run wild:  
    ```bash
    docker compose up -d
