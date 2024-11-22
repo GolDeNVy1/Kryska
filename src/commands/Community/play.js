@@ -53,8 +53,8 @@ module.exports = {
         const loadingEmbed = {
             color: 0x3498db,
             description: result.type === "PLAYLIST" 
-                ? `**Добавлено в очередь:** ${result.playlistName} с \`${player.queue.length}\` Треками` 
-                : `**Добавлено в очередь:** ${result.tracks[0].title}`
+                ? `**Добавлено в репертуар:** ${result.playlistName} с \`${result.tracks.length}\` Треками` 
+                : `**Добавлено в репертуар:** ${result.tracks[0].title}`
         };
         await interaction.followUp({ embeds: [loadingEmbed] });
     }

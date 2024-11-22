@@ -64,34 +64,81 @@ kazagumo.shoukaku.on('disconnect', (name, count) => {
 
 // кнопочки
 kazagumo.on('playerStart', (player, track) => {
-    let embedColor = 0xffff00; // цвет по умолчанию
-    let embedTitle = `🎸Сейчас играю🎸`;
-    let embedDescription = `[${track.title}](${track.realUri})`;
-    if (track.uri.includes('youtube.com') || track.uri.includes('youtu.be')) {
+   /* let embedColor = 0xffff00; // цвет по умолчанию
+    let embedTitle = `🎸Сейчас играю🎸`;*/
+    let embedDescription = `## [${track.title}](${track.realUri})`;
+    /*if (track.uri.includes('youtube.com') || track.uri.includes('youtu.be')) {
         embedColor = 0xff0000; // красный цвет для YouTube
-        embedTitle = `📺 YouTube - 🎸Сейчас играю🎸`;
+        embedTitle = `https://pin.it/4bB6HxG8q YouTube - 🎸Сейчас играю🎸`;
     } else if (track.uri.includes('spotify.com')) {
         embedColor = 0x1db954; // зелёный цвет для Spotify
-        embedTitle = `🎧 Spotify - 🎸Сейчас играю🎸`;
+        embedTitle = `https://media4.giphy.com/media/cOfwtFobGCLJBU3DNn/giphy.gif Spotify - 🎸Сейчас играю🎸`;
     } else if (track.uri.includes('soundcloud.com')) {
-        embedColor = 0xff7700; // оранжевый цвет для SoundCloud
-        embedTitle = `☁️ SoundCloud - 🎸Сейчас играю🎸`;
+        embedColor = 0xff3300; // оранжевый цвет для SoundCloud
+        embedTitle = `http://surl.li/nkxqnp SoundCloud - 🎸Сейчас играю🎸`;
     } else if (track.uri.includes('apple.com')) {
-        embedColor = 0xff69b4; // розовый для эпл
-        embedTitle = `🎶 Apple Music - 🎸Сейчас играю🎸`;
+        embedColor = 0xfc3c44; // розовый для эпл
+        embedTitle = `http://surl.li/nylztq Apple Music - 🎸Сейчас играю🎸`;
+    }*/
+   /*if(platformIcons) {
+        embedTitle = `🎸Сейчас играю🎸`;}*/
+
+    const platformIcons = {
+        youtube: 'https://i.imgur.com/ICj7Eip.gif',
+        spotify: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGtwaXk4YjV5eTRkcHY2MmxhaWxxYWl6cmQwbnhmNHlueGxhOWJndCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EFGXDUBXcUd131C0CR/giphy.gif',
+        soundcloud: 'https://media4.giphy.com/media/kKJPSx14GFUyAJ8VoH/giphy.gif?cid=6c09b9528qnptbim13jbqmhnqjnys6fykuvk9zhhdphzfx26&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s',
+        applemusic: 'https://i.imgur.com/iK3cwrZ.gif',
+        deezer: 'https://i.imgur.com/q7UeOdK.gif',
+        jiosaavn: 'https://i.imgur.com/N9Nt80h.png',
+        default: 'https://thumbs2.imgbox.com/4f/9c/adRv6TPw_t.png'
+    }
+
+    /*const platformIcons = {
+        youtube: '<a:YouTube:1309203432044757073>',
+        spotify: '<a:spotify1:1309332922544689153>',
+        soundcloud: '<a:soundcloud:1309175196250407002>',
+        applemusic: '<a:AppleMusic:1309330784674385973>',
+        deezer: '<a:outputonlinegiftools:1309339089215946782>',
+        jiosaavn: 'https://i.imgur.com/N9Nt80h.png',
+        default: '<a:spinningratstupidrat:1283351974808518687>'
+    }*/
+
+    const platformColors = {
+        youtube: 0xff0000,
+        spotify: 0x1DB954,
+        soundcloud: 0xff3300,
+        applemusic: 0xfc3c44,
+        deezer:0x5f0a87,
+        jiosaavn:0x008A78,
+        default: 0xffff00,
     }
     
+    const botVoiceChannelId = player.voiceId;
+    let botVoiceChannelName = 'Неизвестный канал';
+
+
+    const guild = client.guilds.cache.get(player.guildId);
+        if (guild) {
+    const voiceChannel = guild.channels.cache.get(botVoiceChannelId);
+        if (voiceChannel) botVoiceChannelName = voiceChannel.name;
+}
+
+    const platform = platformIcons.hasOwnProperty(track.sourceName) ? track.sourceName : 'default';
+    const color = platformColors[platform] || platformColors.default;
+    const icon = platformIcons[platform];
     
+
     const isPlayingEmbed = new EmbedBuilder()
-        .setColor(embedColor)
-        .setTitle(embedTitle)
+        .setColor(color)
+        .setAuthor({ name: '🎸Сейчас играю🎸', iconURL: icon })
         .setDescription(embedDescription)
         .addFields(
             { name: '🎶Заказал', value: `<@${track.requester.id}>`, inline: true },
-            { name: '🎤 Автор песни', value: `${track.author}`, inline: true })
+            { name: '🎤 Автор', value: `${track.author}`, inline: true },
+            { name: '⏱️ Длительность:', value: `\`${formatTime(track.length)}\``, inline: true })
         .setImage(track.thumbnail)
         .setFooter({ 
-            text: `Длительность ${formatTime(track.length)}`, 
+            text: `Навожу суету в: "${botVoiceChannelName}" 😎`, 
             iconURL: "https://media.tenor.com/aaEMtGfZFbkAAAAi/rat-spinning.gif" 
         });
 
