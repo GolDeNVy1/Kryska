@@ -1,4 +1,3 @@
-```markdown
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -73,4 +72,3 @@ If you run into trouble or just want to hang out with Kryska and her team, join 
 
 ### ❤️ **License**
 Kryska is distributed under the MIT License. See `LICENSE` for details.  
-```
