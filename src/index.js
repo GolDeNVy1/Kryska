@@ -95,6 +95,7 @@ kazagumo.shoukaku.on('disconnect', (name) => {
     reconnect();
 });
 // дальше всё работают
+// ghjdthrf
 
 
 // кнопочки
