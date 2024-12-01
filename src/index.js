@@ -47,19 +47,54 @@ const kazagumo = new Kazagumo(
             if (guild) guild.shard.send(payload);
         }
     }, new Connectors.DiscordJS(client), Nodes);
+
+    
+    
     
 kazagumo.shoukaku.on('ready', (name) => console.log(`Lavalink ${name}: Ready!`));
 kazagumo.shoukaku.on('error', (name, error) => console.error(`Lavalink ${name}: Error Caught`, error));
 kazagumo.shoukaku.on('close', (name, code, reason) => console.warn(`Lavalink ${name}: Closed, Code ${code}, Reason ${reason || 'No reason'}`));
 kazagumo.shoukaku.on('debug', (name, info) => console.debug(`Lavalink ${name}: Debug`, info));
-kazagumo.shoukaku.on('disconnect', (name, count) => {
-    const players = [...kazagumo.shoukaku.players.values()].filter(p => p.node.name === name);
-    players.map(player => {
-        kazagumo.destroyPlayer(player.guildId);
-        player.destroy();
-    });
-    console.warn(`Lavalink ${name}: Disconnected`);
+kazagumo.shoukaku.on('disconnect', (name) => {
+    console.warn(`Lavalink ${name}: Disconnected. Attempting to reconnect...`);
+    // оно по идее не работает но это для перезапуска в случае неудачного подключения к лаве
+    const node = kazagumo.shoukaku.nodes.get(name);
+
+    if (!node) {
+        console.error(`Node ${name} not found in kazagumo.shoukaku.nodes. Reinitializing node...`);
+        kazagumo.shoukaku.addNode({
+            name: name,
+            url: 'lavalink:2333',
+            auth: 'youshallnotpass',
+        });
+    }
+
+    const reconnect = () => {
+        const node = kazagumo.shoukaku.nodes.get(name);
+
+        if (!node) {
+            console.error(`Node ${name} still not found. Retrying in 3 seconds...`);
+            setTimeout(reconnect, 3000);
+            return;
+        }
+
+        if (node.connected) {
+            console.log(`Node ${name} successfully reconnected.`);
+            return;
+        }
+
+        console.log(`Reconnecting to node ${name}...`);
+        node.connect()
+            .then(() => console.log(`Node ${name} reconnected successfully!`))
+            .catch((error) => {
+                console.error(`Failed to reconnect to node ${name}:`, error);
+                setTimeout(reconnect, 3000);
+            });
+    };
+
+    reconnect();
 });
+// дальше всё работают
 
 
 // кнопочки
