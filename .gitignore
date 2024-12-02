@@ -134,3 +134,6 @@ dist
 plugins
 .DS_Store
 .idea
+
+# Custom sensitive files
+.application.yml
