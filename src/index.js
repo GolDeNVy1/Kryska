@@ -101,8 +101,8 @@ kazagumo.shoukaku.on('disconnect', (name) => {
 // кнопочки
 kazagumo.on('playerStart', (player, track) => {
    /* let embedColor = 0xffff00; // цвет по умолчанию
-    let embedTitle = `🎸Сейчас играю🎸`;*/
-    //let embedDescription = `## [${track.title}](${track.realUri})`;
+    let embedTitle = `🎸Сейчас играю🎸`;
+    let embedDescription = `## [${track.title}](${track.realUri})`;
     /*if (track.uri.includes('youtube.com') || track.uri.includes('youtu.be')) {
         embedColor = 0xff0000; // красный цвет для YouTube
         embedTitle = `https://pin.it/4bB6HxG8q YouTube - 🎸Сейчас играю🎸`;
@@ -115,8 +115,8 @@ kazagumo.on('playerStart', (player, track) => {
     } else if (track.uri.includes('apple.com')) {
         embedColor = 0xfc3c44; // розовый для эпл
         embedTitle = `http://surl.li/nylztq Apple Music - 🎸Сейчас играю🎸`;
-    }*/
-   /*if(platformIcons) {
+    }
+   if(platformIcons) {
         embedTitle = `🎸Сейчас играю🎸`;}*/
 
     const platformIcons = {
@@ -163,27 +163,25 @@ kazagumo.on('playerStart', (player, track) => {
     const color = platformColors[platform] || platformColors.default;
     const icon = platformIcons[platform];
     
-    const totalDuration = track.length; // Длительность трека в миллисекундах
-    let currentDuration = 0; // Текущее время воспроизведения, которое будем обновлять
+    const totalDuration = track.length;
+    let currentDuration = 0;
 
-    // Функция для форматирования времени в mm:ss
+
     const formatTime = (ms) => {
         const minutes = Math.floor(ms / 60000);
         const seconds = Math.floor((ms % 60000) / 1000);
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
-    // Функция для создания прогресс-бара
     const createProgressBar = (current, total) => {
-    const barLength = 20; // Длина прогресс-бара
-    let progressIndex = Math.floor((current / total) * barLength); // Индекс текущего прогресса
-    // Убедимся, что progressIndex не выходит за границы
+    const barLength = 20;
+    let progressIndex = Math.floor((current / total) * barLength);
     if (progressIndex >= barLength) progressIndex = barLength - 1;
-    const before = '─'.repeat(progressIndex); // Синяя линия до кружка
-    const circle = '🔵'; // Движущийся кружок
-    const after = '─'.repeat(barLength - progressIndex - 1); // Серая линия после кружка
+    const before = '─'.repeat(progressIndex);
+    const circle = '🔵';
+    const after = '─'.repeat(barLength - progressIndex - 1);
 
-    return `\`${before}${circle}${after}\``; // Собираем прогресс-бар
+    return `\`${before}${circle}${after}\``;
     };
 
     const embedDescription = `## [${track.title}](${track.realUri})`;
@@ -252,21 +250,16 @@ kazagumo.on('playerStart', (player, track) => {
         }).then(message => {
             player.data.set("message", message);
         
-            // Переменные для прогресса
-            let currentDuration = 0; // Начало трека
-            const totalDuration = track.length; // Общая длина трека в миллисекундах
+            let currentDuration = 0;
+            const totalDuration = track.length;
         
-            // Обновляем прогресс-бар каждую секунду
             const interval = setInterval(() => {
                 try {
                     if (currentDuration >= totalDuration) {
-                        clearInterval(interval); // Останавливаем таймер, если трек завершён
+                        clearInterval(interval);
                         return;
                     }
-            
-                    currentDuration += 1000; // Увеличиваем текущую позицию на 1 секунду
-            
-                    // Создаём новый прогресс-бар и обновляем сообщение
+                    currentDuration += 1000;
                     message.edit({
                         embeds: [
                             new EmbedBuilder(isPlayingEmbed.data)
@@ -276,25 +269,18 @@ kazagumo.on('playerStart', (player, track) => {
                         ]
                     }).catch(error => {
                         console.error("Ошибка при обновлении сообщения:", error);
-                    
-                        // Если сообщение было удалено, останавливаем таймер
-                        if (error.code === 10008) { // DiscordAPIError: Unknown Message
+                        if (error.code === 10008) {
                             clearInterval(interval);
                         }
                     });
-                    
-            
+
                 } catch (error) {
                     console.error("Ошибка внутри таймера:", error);
-            
-                    // При критической ошибке, можно остановить таймер
                     clearInterval(interval);
                 }
             }, 1000);
             
         
-        
-
     // статус бота
     client.user.setActivity({
         name: `${track.author} - ${track.title}`,
