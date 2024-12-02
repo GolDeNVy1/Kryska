@@ -73,7 +73,7 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-.application.yml
+application.yml
 .env
 .env.development.local
 .env.test.local
@@ -134,6 +134,3 @@ dist
 plugins
 .DS_Store
 .idea
-
-# Custom sensitive files
-.application.yml
