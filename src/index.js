@@ -102,7 +102,7 @@ kazagumo.shoukaku.on('disconnect', (name) => {
 kazagumo.on('playerStart', (player, track) => {
    /* let embedColor = 0xffff00; // цвет по умолчанию
     let embedTitle = `🎸Сейчас играю🎸`;*/
-    let embedDescription = `## [${track.title}](${track.realUri})`;
+    //let embedDescription = `## [${track.title}](${track.realUri})`;
     /*if (track.uri.includes('youtube.com') || track.uri.includes('youtu.be')) {
         embedColor = 0xff0000; // красный цвет для YouTube
         embedTitle = `https://pin.it/4bB6HxG8q YouTube - 🎸Сейчас играю🎸`;
@@ -163,11 +163,35 @@ kazagumo.on('playerStart', (player, track) => {
     const color = platformColors[platform] || platformColors.default;
     const icon = platformIcons[platform];
     
+    const totalDuration = track.length; // Длительность трека в миллисекундах
+    let currentDuration = 0; // Текущее время воспроизведения, которое будем обновлять
+
+    // Функция для форматирования времени в mm:ss
+    const formatTime = (ms) => {
+        const minutes = Math.floor(ms / 60000);
+        const seconds = Math.floor((ms % 60000) / 1000);
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
+
+    // Функция для создания прогресс-бара
+    const createProgressBar = (current, total) => {
+    const barLength = 20; // Длина прогресс-бара
+    let progressIndex = Math.floor((current / total) * barLength); // Индекс текущего прогресса
+    // Убедимся, что progressIndex не выходит за границы
+    if (progressIndex >= barLength) progressIndex = barLength - 1;
+    const before = '─'.repeat(progressIndex); // Синяя линия до кружка
+    const circle = '🔵'; // Движущийся кружок
+    const after = '─'.repeat(barLength - progressIndex - 1); // Серая линия после кружка
+
+    return `\`${before}${circle}${after}\``; // Собираем прогресс-бар
+    };
+
+    const embedDescription = `## [${track.title}](${track.realUri})`;
 
     const isPlayingEmbed = new EmbedBuilder()
         .setColor(color)
         .setAuthor({ name: '🎸Сейчас играю🎸', iconURL: icon })
-        .setDescription(embedDescription)
+        .setDescription(`${embedDescription}\n\nПрогресс: ${createProgressBar(currentDuration, totalDuration)} - ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`)
         .addFields(
             { name: '🎶Заказал', value: `<@${track.requester.id}>`, inline: true },
             { name: '🎤 Автор', value: `${track.author}`, inline: true },
@@ -222,13 +246,54 @@ kazagumo.on('playerStart', (player, track) => {
 
 
         
-client.channels.cache.get(player.textId)?.send({
-    embeds: [isPlayingEmbed],
-    components: [row1/*, row2*/]
-}).then(message => {
-    player.data.set("message", message);
-    
-    
+        client.channels.cache.get(player.textId)?.send({
+            embeds: [isPlayingEmbed],
+            components: [row1 /*, row2*/]
+        }).then(message => {
+            player.data.set("message", message);
+        
+            // Переменные для прогресса
+            let currentDuration = 0; // Начало трека
+            const totalDuration = track.length; // Общая длина трека в миллисекундах
+        
+            // Обновляем прогресс-бар каждую секунду
+            const interval = setInterval(() => {
+                try {
+                    if (currentDuration >= totalDuration) {
+                        clearInterval(interval); // Останавливаем таймер, если трек завершён
+                        return;
+                    }
+            
+                    currentDuration += 1000; // Увеличиваем текущую позицию на 1 секунду
+            
+                    // Создаём новый прогресс-бар и обновляем сообщение
+                    message.edit({
+                        embeds: [
+                            new EmbedBuilder(isPlayingEmbed.data)
+                                .setDescription(
+                                    `${embedDescription}\n\nПрогресс: ${createProgressBar(currentDuration, totalDuration)} - ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`
+                                )
+                        ]
+                    }).catch(error => {
+                        console.error("Ошибка при обновлении сообщения:", error);
+                    
+                        // Если сообщение было удалено, останавливаем таймер
+                        if (error.code === 10008) { // DiscordAPIError: Unknown Message
+                            clearInterval(interval);
+                        }
+                    });
+                    
+            
+                } catch (error) {
+                    console.error("Ошибка внутри таймера:", error);
+            
+                    // При критической ошибке, можно остановить таймер
+                    clearInterval(interval);
+                }
+            }, 1000);
+            
+        
+        
 
     // статус бота
     client.user.setActivity({
