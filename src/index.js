@@ -252,31 +252,39 @@ kazagumo.on('playerStart', (player, track) => {
         
             let currentDuration = 0;
             const totalDuration = track.length;
+            let messageDeleted = false;
         
-            const interval = setInterval(() => {
+            const interval = setInterval(async () => {
                 try {
-                    if (currentDuration >= totalDuration) {
+                    // Увеличиваем текущую длительность
+                    currentDuration += 1000;
+        
+                    // Если время завершилось или сообщение было удалено, останавливаем интервал
+                    if (currentDuration >= totalDuration || messageDeleted) {
                         clearInterval(interval);
                         return;
                     }
-                    currentDuration += 1000;
-                    message.edit({
-                        embeds: [
-                            new EmbedBuilder(isPlayingEmbed.data)
-                                .setDescription(
-                                    `${embedDescription}\n\nПрогресс: ${createProgressBar(currentDuration, totalDuration)} - ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`
-                                )
-                        ]
-                    }).catch(error => {
-                        console.error("Ошибка при обновлении сообщения:", error);
-                        if (error.code === 10008) {
-                            clearInterval(interval);
-                        }
-                    });
-
+        
+                    // Проверяем, доступно ли сообщение
+                    const fetchedMessage = await message.channel.messages.fetch(message.id).catch(() => null);
+                    if (!fetchedMessage) {
+                        messageDeleted = true;
+                        clearInterval(interval); // Прекращаем обновления
+                        return;
+                    }
+        
+                    // Обновляем сообщение
+                    const updatedEmbed = EmbedBuilder.from(isPlayingEmbed)
+                        .setDescription(`${embedDescription}\n\nПрогресс: ${createProgressBar(currentDuration, totalDuration)} - ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`);
+                    await message.edit({ embeds: [updatedEmbed] });
                 } catch (error) {
-                    console.error("Ошибка внутри таймера:", error);
-                    clearInterval(interval);
+                    // Если ошибка связана с отсутствием сообщения, прекращаем обновления
+                    if (error.code === 10008) {
+                        messageDeleted = true;
+                        clearInterval(interval);
+                    } else {
+                        console.error("Ошибка при обновлении сообщения:", error);
+                    }
                 }
             }, 1000);
             
