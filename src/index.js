@@ -177,9 +177,9 @@ kazagumo.on('playerStart', (player, track) => {
     const barLength = 20;
     let progressIndex = Math.floor((current / total) * barLength);
     if (progressIndex >= barLength) progressIndex = barLength - 1;
-    const before = '─'.repeat(progressIndex);
-    const circle = '🔵';
-    const after = '─'.repeat(barLength - progressIndex - 1);
+    const before = '▬'.repeat(progressIndex);
+    const circle = '🔘';
+    const after = '▬'.repeat(barLength - progressIndex - 1);
 
     return `\`${before}${circle}${after}\``;
     };
@@ -189,7 +189,7 @@ kazagumo.on('playerStart', (player, track) => {
     const isPlayingEmbed = new EmbedBuilder()
         .setColor(color)
         .setAuthor({ name: '🎸Сейчас играю🎸', iconURL: icon })
-        .setDescription(`${embedDescription}\n\nПрогресс: ${createProgressBar(currentDuration, totalDuration)} - ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`)
+        .setDescription(embedDescription)
         .addFields(
             { name: '🎶Заказал', value: `<@${track.requester.id}>`, inline: true },
             { name: '🎤 Автор', value: `${track.author}`, inline: true },
@@ -198,7 +198,9 @@ kazagumo.on('playerStart', (player, track) => {
         .setFooter({ 
             text: `Навожу суету в: "${botVoiceChannelName}" 😎`, 
             iconURL: "https://media.tenor.com/aaEMtGfZFbkAAAAi/rat-spinning.gif" 
-        });
+        })
+        .setDescription(`Прогресс: ${createProgressBar(currentDuration, totalDuration)}  ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`);
+      
 
 
     const channel = client.channels.cache.get(player.textChannel);
@@ -244,49 +246,44 @@ kazagumo.on('playerStart', (player, track) => {
 
 
         
-        client.channels.cache.get(player.textId)?.send({
-            embeds: [isPlayingEmbed],
-            components: [row1 /*, row2*/]
-        }).then(message => {
-            player.data.set("message", message);
-        
-            let currentDuration = 0;
-            const totalDuration = track.length;
-            let messageDeleted = false;
-        
-            const interval = setInterval(async () => {
-                try {
-                    // Увеличиваем текущую длительность
-                    currentDuration += 1000;
-        
-                    // Если время завершилось или сообщение было удалено, останавливаем интервал
-                    if (currentDuration >= totalDuration || messageDeleted) {
-                        clearInterval(interval);
-                        return;
-                    }
-        
-                    // Проверяем, доступно ли сообщение
-                    const fetchedMessage = await message.channel.messages.fetch(message.id).catch(() => null);
-                    if (!fetchedMessage) {
-                        messageDeleted = true;
-                        clearInterval(interval); // Прекращаем обновления
-                        return;
-                    }
-        
-                    // Обновляем сообщение
-                    const updatedEmbed = EmbedBuilder.from(isPlayingEmbed)
-                        .setDescription(`${embedDescription}\n\nПрогресс: ${createProgressBar(currentDuration, totalDuration)} - ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`);
-                    await message.edit({ embeds: [updatedEmbed] });
-                } catch (error) {
-                    // Если ошибка связана с отсутствием сообщения, прекращаем обновления
-                    if (error.code === 10008) {
-                        messageDeleted = true;
-                        clearInterval(interval);
-                    } else {
-                        console.error("Ошибка при обновлении сообщения:", error);
-                    }
+    client.channels.cache.get(player.textId)?.send({
+        embeds: [isPlayingEmbed],
+        components: [row1 /*, row2*/]
+    }).then(message => {
+        player.data.set("message", message);
+
+        let currentDuration = 0;
+        const totalDuration = track.length;
+        let messageDeleted = false;
+
+        const interval = setInterval(async () => {
+            try {
+                currentDuration += 1000;
+
+                if (currentDuration >= totalDuration || messageDeleted) {
+                    clearInterval(interval);
+                    return;
                 }
-            }, 1000);
+                const fetchedMessage = await message.channel.messages.fetch(message.id).catch(() => null);
+                if (!fetchedMessage) {
+                    messageDeleted = true;
+                    clearInterval(interval);
+                    return;
+                }
+
+                
+                const updatedEmbed = EmbedBuilder.from(isPlayingEmbed)
+                    .setDescription(`${embedDescription}\n\nПрогресс: ${createProgressBar(currentDuration, totalDuration)} - ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`);
+                await message.edit({ embeds: [updatedEmbed] });
+            } catch (error) {
+                if (error.code === 10008) {
+                    messageDeleted = true;
+                    clearInterval(interval);
+                } else {
+                    console.error("Ошибка при обновлении сообщения:", error);
+                }
+            }
+        }, 1000);
             
         
     // статус бота
