@@ -1,4 +1,4 @@
-const { Interaction } = require("discord.js");
+const { EmbedBuilder } = require('discord.js');
 
 // Слэш-команды
 module.exports = {
@@ -30,18 +30,18 @@ module.exports = {
 
         kazagumo.on('playerEnd', (player, track) => {
             if (!player.previousTracks) {
-                player.previousTracks = []; 
+                player.previousTracks = [];
             }
-            player.previousTracks.push(track); 
-            
+            player.previousTracks.push(track);
+
         });
 
         // Логика для кнопок
         if (interaction.isButton()) {
             await interaction.deferReply({ ephemeral: true });
             const voiceChannel = interaction.member.voice.channel;
-            if (!voiceChannel) return interaction.followUp({ content: 'Не вижу тебя, где ты?', ephemeral: true });
-
+            if (!voiceChannel) return interaction.followUp({ content: 'Не вижу тебя, где ты?', ephemeral: true });            
+            
             const kazagumo = client.kazagumo;
             const player = kazagumo.players.get(interaction.guildId);
             if (!player) return interaction.followUp({ content: 'Играть нечего!', ephemeral: true });
@@ -51,14 +51,24 @@ module.exports = {
 
             switch (interaction.customId) {
 
-                case 'pause_resume':
+                case 'pause_resume': 
+                    if (!player.data.get("message")) {
+                        return interaction.editReply({ content: 'Эмбед не найден, не могу обновить состояние.', ephemeral: true });
+                    }
+
+                    const message = player.data.get("message");
+                    const embed = EmbedBuilder.from(message.embeds[0]);
+
                     if (player.paused) {
                         player.pause(false);
+                        embed.setAuthor({ name: '🎸 Воспроизведение продолжается!' });
                         await interaction.editReply({ content: '▶️ Продолжаем!', ephemeral: true });
                     } else {
                         player.pause(true);
+                        embed.setAuthor({ name: '⏸️ Пауза' });
                         await interaction.editReply({ content: '⏸️ Пауза!', ephemeral: true });
                     }
+                    await message.edit({ embeds: [embed]});
                     break;
 
                 case 'skip':
@@ -71,40 +81,40 @@ module.exports = {
                     break;
 
                 case 'previous':
-                       
-                            
+
+
                     if (player.getPrevious()) {
                         await interaction.editReply({ content: `⏮ Вроде-бы был этот, да?: **${player.getPrevious().title}**`, ephemeral: true });
-                        await player.play(player.getPrevious(true)); 
+                        await player.play(player.getPrevious(true));
                     } else {
                         await interaction.editReply({ content: 'Извини, я не помню как он звучал, отправь ссылку заново!', ephemeral: true });
                     }
-                        
+
                     break;
-                    
+
 
                 case 'stop':
                     const lastMessage = player.data.get("message");
-                if (lastMessage) {
-                    try {
-                        await lastMessage.delete();
-                    } catch (error) {
-                        console.error('Error deleting "Now Playing" message:', error);
+                    if (lastMessage) {
+                        try {
+                            await lastMessage.delete();
+                        } catch (error) {
+                            console.error('Error deleting "Now Playing" message:', error);
+                        }
+                        player.data.delete("message");
                     }
-                    player.data.delete("message");
-                }
                     player.destroy();
-                        await interaction.editReply({ content: '⏹️ Ладно, позовёте когда будет скучно.', ephemeral: true });
+                    await interaction.editReply({ content: '⏹️ Ладно, позовёте когда будет скучно.', ephemeral: true });
                     break;
 
-                case 'shuffle':
-                    if (player.queue.length > 1) {
-                        player.queue.shuffle();
-                        await interaction.editReply({ content: '🔀 Репертуар перемешан!', ephemeral: true });
-                    } else {
-                        await interaction.editReply({ content: 'Недостаточно треков для перемешивания.', ephemeral: true });
-                    }
-                    break;
+                    case 'shuffle':
+                        if (player.queue.length > 1) {
+                            player.queue.shuffle();
+                            await interaction.editReply({ content: '🔀 Репертуар перемешан!', ephemeral: true });
+                        } else {
+                            await interaction.editReply({ content: 'Недостаточно треков для перемешивания.', ephemeral: true });
+                        }
+                        break;
 
                 case 'volume_down':
                     player.volume = Math.max(0, player.volume - 10);

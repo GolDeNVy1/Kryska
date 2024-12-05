@@ -25,10 +25,10 @@ module.exports = {
         if (voiceChannel.id !== botVoiceChannel) return interaction.followUp({ content: 'Я в другой компании сейчас!' });
 
         const volume = interaction.options.getInteger('volume');
-
+        const userMention = `<@&{interaction.user.id}>`;
         try {
             await player.setVolume(volume);
-            await interaction.followUp({ content: `Громкость изменена до ${volume}` });
+            await interaction.followUp({ content: `Громкость изменена до ${volume} человеком ${userMention}` });
         } catch (error) {
             await interaction.followUp("У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.");
             console.error(error);

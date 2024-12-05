@@ -18,9 +18,11 @@ module.exports = {
         const botVoiceChannel = player.voiceId;
         if (voiceChannel.id !== botVoiceChannel) return interaction.followUp({ content: 'Я в другой компании сейчас!' });
 
+        const userMention = `<@${interaction.user.id}>`;
+
         try {
             await player.queue.shuffle();
-            await interaction.followUp({ content: 'Репертуар перемешан!' });
+            await interaction.followUp({ content: `Репертуар перемешан! ${userMention}` });
         } catch (error) {
             await interaction.followUp("У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.");
             console.error(error);

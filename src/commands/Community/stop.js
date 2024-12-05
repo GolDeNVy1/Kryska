@@ -17,7 +17,7 @@ module.exports = {
             return interaction.followUp({ content: 'Играть нечего!' });
         }
 
-       
+       const userMention = `<@&{interaction.user.id}>`;
 
         try {
             const lastMessage = player.data.get("message");
@@ -30,7 +30,7 @@ module.exports = {
                 player.data.delete("message");
             }
             await player.destroy();
-            await interaction.followUp({ content: 'Ладно, с вас хватит, ещё увидимся ;)' });
+            await interaction.followUp({ content: `Ладно, с вас хватит, ${userMention}, ещё увидимся ;)` });
         } catch (error) {
             await interaction.followUp("У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.");
             console.error(error);

@@ -95,7 +95,6 @@ kazagumo.shoukaku.on('disconnect', (name) => {
     reconnect();
 });
 // дальше всё работают
-// ghjdthrf
 
 
 // кнопочки
@@ -174,7 +173,7 @@ kazagumo.on('playerStart', (player, track) => {
     };
 
     const createProgressBar = (current, total) => {
-    const barLength = 20;
+    const barLength = 30;
     let progressIndex = Math.floor((current / total) * barLength);
     if (progressIndex >= barLength) progressIndex = barLength - 1;
     const before = '▬'.repeat(progressIndex);
@@ -199,11 +198,11 @@ kazagumo.on('playerStart', (player, track) => {
             text: `Навожу суету в: "${botVoiceChannelName}" 😎`, 
             iconURL: "https://media.tenor.com/aaEMtGfZFbkAAAAi/rat-spinning.gif" 
         })
-        .setDescription(`Прогресс: ${createProgressBar(currentDuration, totalDuration)}  ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`);
-      
+        .setDescription(`${createProgressBar(currentDuration, totalDuration)}  ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`);
 
 
-    const channel = client.channels.cache.get(player.textChannel);
+
+        const channel = client.channels.cache.get(player.textChannel);
     if (channel) channel.send({ embeds: [isPlayingEmbed] });
 
 
@@ -258,6 +257,10 @@ kazagumo.on('playerStart', (player, track) => {
 
         const interval = setInterval(async () => {
             try {
+                if (player.paused) {
+                    return;
+                }
+
                 currentDuration += 1000;
 
                 if (currentDuration >= totalDuration || messageDeleted) {
@@ -273,7 +276,7 @@ kazagumo.on('playerStart', (player, track) => {
 
                 
                 const updatedEmbed = EmbedBuilder.from(isPlayingEmbed)
-                    .setDescription(`${embedDescription}\n\nПрогресс: ${createProgressBar(currentDuration, totalDuration)} - ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`);
+                    .setDescription(`${embedDescription}\n\n${createProgressBar(currentDuration, totalDuration)}  ${formatTime(currentDuration)} / ${formatTime(totalDuration)}`);
                 await message.edit({ embeds: [updatedEmbed] });
             } catch (error) {
                 if (error.code === 10008) {
@@ -296,6 +299,29 @@ kazagumo.on('playerStart', (player, track) => {
 
 
 
+kazagumo.on('playerEnd' || 'playerEmpty', async (player, track) => {
+    const lastMessage = player.data.get("message");
+    if (lastMessage) {
+        try {
+            const fetchedMessage = await lastMessage.channel.messages.fetch(lastMessage.id).catch(() => null);
+            if (!fetchedMessage) {
+                console.warn(`Сообщение уже удалено или недоступно: ${lastMessage.id}`);
+                player.data.delete("message");
+                return;
+            }
+
+            await fetchedMessage.delete();
+        } catch (error) {
+            if (error.code === 10008) {
+                console.warn(`Сообщение с ID ${lastMessage.id} уже удалено.`);
+            } else {
+                console.error('Ошибка при удалении сообщения "Now Playing":', error);
+            }
+        }
+
+        player.data.delete("message");
+    }
+});
 
 kazagumo.on('playerStart', (player) => {
         setTimeout(async () => {
@@ -347,29 +373,7 @@ kazagumo.on('playerEmpty', async (player) => {
 });
 
 
-kazagumo.on('playerEnd', async (player, track) => {
-    const lastMessage = player.data.get("message");
-    if (lastMessage) {
-        try {
-            const fetchedMessage = await lastMessage.channel.messages.fetch(lastMessage.id).catch(() => null);
-            if (!fetchedMessage) {
-                console.warn(`Сообщение уже удалено или недоступно: ${lastMessage.id}`);
-                player.data.delete("message");
-                return;
-            }
 
-            await fetchedMessage.delete();
-        } catch (error) {
-            if (error.code === 10008) {
-                console.warn(`Сообщение с ID ${lastMessage.id} уже удалено.`);
-            } else {
-                console.error('Ошибка при удалении сообщения "Now Playing":', error);
-            }
-        }
-
-        player.data.delete("message");
-    }
-});
 
 kazagumo.on('playerStart', async (player, track) => {
     if (disconnectTimeout) {
@@ -406,7 +410,7 @@ async function pickPresence () {
 }
 
 // форматирование времени
-function formatTime(milliseconds) {
+/*function formatTime(milliseconds) {
     let seconds = Math.floor(milliseconds / 1000);
     let minutes = Math.floor(seconds / 60);
     let hours = Math.floor(minutes / 60);
@@ -419,7 +423,7 @@ function formatTime(milliseconds) {
     const secondsStr = String(seconds).padStart(2, '0');
 
     return `${hoursStr}:${minutesStr}:${secondsStr}`;
-}
+}*/
 
 (async () => {
     for (const file of functions) {

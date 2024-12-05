@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,14 +23,33 @@ module.exports = {
             return interaction.followUp({ content: 'Я сейчас в другой компании!' });
         }
 
+        const userMention = `<@${interaction.user.id}>`;
+
         try {
-            if (player.paused === true) {
+            if (!player.data.get("message")) return interaction.editReply({ content: 'Эмбед не найден, не могу обновить состояние.', ephemeral: true });
+                
+            const message = player.data.get("message");
+            const embed = EmbedBuilder.from(message.embeds[0]);
+
+            if (player.paused) {
+                player.pause(false);
+                await interaction.editReply({ content: `${userMention} ▶️ Продолжаем! ` });
+            } else {
+                player.pause(true);
+                embed.setAuthor({ name: '⏸️ Пауза' });
+                await interaction.editReply({ content: `${userMention} ⏸️ Пауза!` });
+            }
+
+            /* if (player.paused === true) {
                 await player.pause(false);
                 return interaction.followUp({ content: 'Окей, продолжаю.' });
             } else {
                 await player.pause(true);
                 return interaction.followUp({ content: 'Окей, подожду тебя.' });
-            }
+            }*/
+            // Обновляем сообщение с эмбедами
+            await message.edit({ embeds: [embed] });
+
         } catch (error) {
             await interaction.followUp("У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.");
             console.error(error);
