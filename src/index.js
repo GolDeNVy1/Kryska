@@ -345,6 +345,19 @@ kazagumo.on('playerStart', (player) => {
 let disconnectTimeout;
 
 kazagumo.on('playerEmpty', async (player) => {
+    const lastMessage = player.data.get("message");
+    if (lastMessage) {
+        try {
+            const fetchedMessage = await lastMessage.channel.messages.fetch(lastMessage.id).catch(() => null);
+            if (fetchedMessage) {
+                await fetchedMessage.delete();
+            }
+        } catch (error) {
+            console.error('Ошибка при удалении сообщения:', error);
+        }
+        player.data.delete("message");
+    }
+
     if (!player.queue.length) {
         const embed = new EmbedBuilder()
             .setColor(0xff0000)
