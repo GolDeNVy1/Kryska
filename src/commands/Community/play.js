@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -50,12 +50,15 @@ module.exports = {
             player.play();
         }
 
-        const loadingEmbed = {
-            color: 0x3498db,
-            description: result.type === "PLAYLIST" 
+        const loadingEmbed = new EmbedBuilder()
+            .setColor(0x3498db)
+            .setTitle(result.type === "PLAYLIST" 
                 ? `**Добавлено в репертуар:** ${result.playlistName} с \`${result.tracks.length}\` Треками` 
-                : `**Добавлено в репертуар:** ${result.tracks[0].title}`
-        };
+                : `**Добавлено в репертуар:** ${result.tracks[0].title}`)
+            .setFooter({ 
+                text: `Запустил: ${interaction.user.displayName}`,
+                iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+            });
         await interaction.followUp({ embeds: [loadingEmbed] });
     }
 };

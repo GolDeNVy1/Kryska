@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -37,17 +37,20 @@ module.exports = {
 
             player.queue.unshift(...result.tracks);
 
-            const loadingEmbed = {
-                color: 0xA020F0,
-                description: result.type === "PLAYLIST"
+            const loadingEmbed = new EmbedBuilder()
+                .setColor(0xA020F0)
+                .setTitle(result.type === "PLAYLIST"
                     ? `**Окей, следующее:** ${result.playlistName}.`
-                    : `**Окей, следующее:** ${result.tracks[0].title}.`
-            };
+                    : `**Окей, следующее:** ${result.tracks[0].title}.`)
+                .setFooter({ 
+                    text: `Запустил: ${interaction.user.displayName}`,
+                    iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+                });
+                    await interaction.followUp({ embeds: [loadingEmbed] });
 
-            await interaction.followUp({ embeds: [loadingEmbed] });
-        } catch (error) {
-            await interaction.followUp('У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.');
-            console.error(error);
-        }
-    }
-};
+                } catch (error) {
+                    console.error(error);
+                    await interaction.followUp({ content: 'У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.' });
+                }
+            }
+        };

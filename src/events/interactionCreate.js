@@ -57,18 +57,18 @@ module.exports = {
                     }
 
                     const message = player.data.get("message");
-                    const embed = EmbedBuilder.from(message.embeds[0]);
+                    const pauseEmbed = EmbedBuilder.from(message.embeds[0]);
 
                     if (player.paused) {
                         player.pause(false);
-                        embed.setAuthor({ name: '🎸 Воспроизведение продолжается!' });
+                        pauseEmbed.setAuthor({ name: '🎸 Воспроизведение продолжается!' });
                         await interaction.editReply({ content: '▶️ Продолжаем!', ephemeral: true });
                     } else {
                         player.pause(true);
-                        embed.setAuthor({ name: '⏸️ Пауза' });
+                        pauseEmbed.setAuthor({ name: '⏸️ Пауза' });
                         await interaction.editReply({ content: '⏸️ Пауза!', ephemeral: true });
                     }
-                    await message.edit({ embeds: [embed]});
+                    await message.edit({ embeds: [pauseEmbed]});
                     break;
 
                 case 'skip':
@@ -107,7 +107,7 @@ module.exports = {
                     await interaction.editReply({ content: '⏹️ Ладно, позовёте когда будет скучно.', ephemeral: true });
                     break;
 
-                    case 'shuffle':
+                case 'shuffle':
                         if (player.queue.length > 1) {
                             player.queue.shuffle();
                             await interaction.editReply({ content: '🔀 Репертуар перемешан!', ephemeral: true });
@@ -131,6 +131,95 @@ module.exports = {
                 default:
                     await interaction.editReply({ content: 'Неизвестная кнопка.', ephemeral: true });
                     break;
+                case 'clear_queue':
+                    if (player.queue.length > 0) {
+                        player.queue.clear();
+                        await interaction.editReply({ content: '🗑️ Очередь очищена!', ephemeral: true });
+                    } else {
+                        await interaction.editReply({ content: 'Очередь уже пуста.', ephemeral: true });
+                    }
+                    break;
+
+                    case 'repeat':
+                        switch (player.loop) {
+                            case 'none':
+                                player.setLoop('track');
+                                await interaction.editReply({ content: `🔂 Повторяю одну песню.` });
+                                break;
+                            case 'track':
+                                player.setLoop('queue');
+                                await interaction.editReply({ content: `🔁 Повторяю весь репертуар.` });
+                                break;
+                            case 'queue':
+                                player.setLoop('none');
+                                await interaction.editReply({ content: `❌ Больше не повторяю.` });
+                                break;
+                        }
+                        break;
+                    
+
+
+                case 'show_queue':
+                    if (!player) {
+                        return interaction.editReply({ 
+                            content: 'Играть нечего!', 
+                            ephemeral: true 
+                        });
+                    }
+                    const userMention = `<@${interaction.user.id}>`;
+                    const tracks = player.queue.slice(0, 30);
+                    const queueEmbed = new EmbedBuilder()
+                        .setColor(0xff6347)
+                        .setTitle('🎶 Мой репертуар на сегодня')
+                        .setThumbnail(player.queue.current.thumbnail || null)
+                        .setDescription(
+                            `**Сейчас играю:**\n[${player.queue.current.title}](${player.queue.current.uri})\n\n**Буду играть следующим:**`
+                        )
+                        .setFooter({ text: `Песен в очереди: ${player.queue.length}` });
+
+                    if (tracks.length === 0) {
+                        queueEmbed.addFields({ 
+                            name: 'Очередь пуста', 
+                            value: 'Добавьте новые песни!' 
+                        });
+                    } else {
+                        const trackList = tracks.map((track, index) => {
+                            const trackTitle = track.title.length > 35 
+                                ? `${track.title.substring(0, 35)}...` 
+                                : track.title;
+                            return `\`${index + 1}.\` [${trackTitle}](${track.uri}) - ${track.author}: ${userMention}`;
+                        });
+
+                        let trackChunks = [];
+                        let currentChunk = '';
+
+                        trackList.forEach(line => {
+                            if ((currentChunk + line + '\n').length <= 1024) {
+                                currentChunk += line + '\n';
+                            } else {
+                                trackChunks.push(currentChunk);
+                                currentChunk = line + '\n';
+                            }
+                        });
+
+                        if (currentChunk) {
+                            trackChunks.push(currentChunk);
+                        }
+
+                        trackChunks.forEach((chunk, index) => {
+                            queueEmbed.addFields({
+                                name: index === 0 ? 'Очередь:' : '‎',
+                                value: chunk,
+                            });
+                        });
+                    }
+
+                    return interaction.editReply({ 
+                        embeds: [queueEmbed], 
+                        ephemeral: true
+                    });
+
+
             }
         }
     }

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -18,11 +18,11 @@ module.exports = {
         const botVoiceChannel = player.voiceId;
         if (voiceChannel.id !== botVoiceChannel) return interaction.followUp({ content: 'Я в другой компании сейчас!' });
 
-        const userMention = `<@${interaction.user.id}>`;
+       
 
         try {
             await player.queue.shuffle();
-            await interaction.followUp({ content: `Репертуар перемешан! ${userMention}` });
+            await interaction.followUp({ content: `<@${interaction.user.id}> Репертуар перемешан!` });
         } catch (error) {
             await interaction.followUp("У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.");
             console.error(error);

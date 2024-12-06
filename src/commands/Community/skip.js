@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -24,7 +24,7 @@ module.exports = {
         const botVoiceChannel = player.voiceId;
         if (voiceChannel.id !== botVoiceChannel) return interaction.followUp({ content: 'Я в другой компании сейчас!' });
 
-        const userMention = `<@${interaction.user.id}>`;
+        
         const index = interaction.options.getInteger('index');
 
         try {
@@ -32,7 +32,7 @@ module.exports = {
                 const currentTrack = player.queue.current;
                 const skippedTrackTitle = currentTrack ? currentTrack.title : 'Неизвестная песня';
                 await player.skip();
-                await interaction.followUp({ content: `${userMention} Пропустил(a): **${skippedTrackTitle}**! Теперь следующая.` });
+                await interaction.followUp({ content: `<@${interaction.user.id}> Пропустил(a): **${skippedTrackTitle}**! Теперь следующая.` });
             } else {
                 if (index < 1 || index > player.queue.size) {
                     return interaction.followUp({ content: `Указанный индекс должен быть от 1 до ${player.queue.size}.` });
@@ -44,7 +44,7 @@ module.exports = {
                 player.queue.splice(0, index - 1);
                 await player.skip();
             
-                await interaction.followUp({ content: `${userMention} Пропустил(a) до: № \`${index}\`. **${skippedToTrackTitle}**!` });
+                await interaction.followUp({ content: `<@${interaction.user.id}> Пропустил(a) до: № \`${index}\`. **${skippedToTrackTitle}**!` });
             }
             
         } catch (error) {

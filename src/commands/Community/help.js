@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,11 +7,11 @@ module.exports = {
     async execute(interaction) {
         await interaction.deferReply();
 
-        const helpEmbed = {
-            color: 0xFFFFFF,
-            title: 'Хэй, давай расскажу что умею!',
-            description: 'Я Крыска <3 - Я умею играть на электронной балалайке)\nСписок моих комманд:',
-            fields: [
+        const helpEmbed = new EmbedBuilder()
+            .setColor(0xFFFFFF)
+            .setTitle('Хэй, давай расскажу что умею!')
+            .setDescription('Я Крыска <3 - Я умею играть на электронной балалайке)\nСписок моих комманд:')
+            .addFields(
                 { name: '/help', value: 'Помощь' },
                 { name: '/play', value: 'Начну играть музыку' },
                 { name: '/stop', value: 'Перестану играть музыку' },
@@ -21,9 +21,12 @@ module.exports = {
                 { name: '/pauseresu', value: 'Остановлюсь и продолжу когда захочешь' },
                 { name: '/queue', value: 'Покажу что в репертуаре (10 следующих треков)' },
                 { name: '/shuffle', value: 'Буду играть песни в разнобой' },
-                { name: '/volume', value: 'Буду играть громче или тише' },
-            ]
-        };
+                { name: '/volume', value: 'Буду играть громче или тише' }
+            )
+            .setFooter({
+                text: `Захотел: ${interaction.user.displayName}`,
+                iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+            });
 
         await interaction.followUp({ embeds: [helpEmbed] });
     }

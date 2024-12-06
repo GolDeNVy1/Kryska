@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,9 +16,7 @@ module.exports = {
         if (!player) {
             return interaction.followUp({ content: 'Играть нечего!' });
         }
-
-       const userMention = `<@&{interaction.user.id}>`;
-
+       
         try {
             const lastMessage = player.data.get("message");
             if (lastMessage) {
@@ -30,7 +28,7 @@ module.exports = {
                 player.data.delete("message");
             }
             await player.destroy();
-            await interaction.followUp({ content: `Ладно, с вас хватит, ${userMention}, ещё увидимся ;)` });
+            await interaction.followUp({ content: `Ладно, с вас хватит, <@${interaction.user.id}>, ещё увидимся ;)` });
         } catch (error) {
             await interaction.followUp("У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.");
             console.error(error);

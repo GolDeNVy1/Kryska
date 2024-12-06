@@ -23,8 +23,6 @@ module.exports = {
             return interaction.followUp({ content: 'Я сейчас в другой компании!' });
         }
 
-        const userMention = `<@${interaction.user.id}>`;
-
         try {
             if (!player.data.get("message")) return interaction.editReply({ content: 'Эмбед не найден, не могу обновить состояние.', ephemeral: true });
                 
@@ -33,11 +31,11 @@ module.exports = {
 
             if (player.paused) {
                 player.pause(false);
-                await interaction.editReply({ content: `${userMention} ▶️ Продолжаем! ` });
+                await interaction.editReply({ content: `<@${interaction.user.id}> ▶️ Продолжаем! ` });
             } else {
                 player.pause(true);
                 embed.setAuthor({ name: '⏸️ Пауза' });
-                await interaction.editReply({ content: `${userMention} ⏸️ Пауза!` });
+                await interaction.editReply({ content: `<@${interaction.user.id}> ⏸️ Пауза!` });
             }
 
             /* if (player.paused === true) {

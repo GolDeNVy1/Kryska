@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -31,7 +31,7 @@ module.exports = {
         let repeatMode = interaction.options.getString('mode');
         try {
             await player.setLoop(repeatMode);
-            await interaction.followUp({ content: `Окей, повторяю ${repeatMode}` });
+            await interaction.followUp({ content: `<@${interaction.user.id}> Окей, повторяю ${repeatMode}` });
         } catch (error) {
             await interaction.followUp({ content: 'У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.' });
             console.error(error);

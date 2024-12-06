@@ -231,8 +231,16 @@ kazagumo.on('playerStart', (player, track) => {
                 .setStyle(ButtonStyle.Secondary),
         );
 
-   /* const row2 = new ActionRowBuilder()
+    const row2 = new ActionRowBuilder()
         .addComponents(
+            new ButtonBuilder()
+                .setCustomId('clear_queue')
+                .setLabel('🗑️')
+                .setStyle(ButtonStyle.Danger),
+            new ButtonBuilder()
+                .setCustomId('show_queue')
+                .setLabel('📜')
+                .setStyle(ButtonStyle.Secondary),
             new ButtonBuilder()
                 .setCustomId('volume_down')
                 .setLabel('🔉')
@@ -240,14 +248,18 @@ kazagumo.on('playerStart', (player, track) => {
             new ButtonBuilder()
                 .setCustomId('volume_up')
                 .setLabel('🔊')
-                .setStyle(ButtonStyle.Secondary)
-        ); */
+                .setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder()
+                .setCustomId('repeat')
+                .setLabel('🔁')
+                .setStyle(ButtonStyle.Secondary),        
+        ); 
 
 
         
     client.channels.cache.get(player.textId)?.send({
         embeds: [isPlayingEmbed],
-        components: [row1 /*, row2*/]
+        components: [row1, row2]
     }).then(message => {
         player.data.set("message", message);
 
