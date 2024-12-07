@@ -21,10 +21,11 @@ module.exports = {
                 { name: '/pauseresu', value: 'Остановлюсь и продолжу когда захочешь' },
                 { name: '/queue', value: 'Покажу что в репертуаре (10 следующих треков)' },
                 { name: '/shuffle', value: 'Буду играть песни в разнобой' },
-                { name: '/volume', value: 'Буду играть громче или тише' }
+                { name: '/volume', value: 'Буду играть громче или тише' },
+                { name: '/insert', value: 'Вставляет заказанную песню следующей в репертуар'}
             )
             .setFooter({
-                text: `Захотел: ${interaction.user.displayName}`,
+                text: `Запустил: ${interaction.user.displayName}`,
                 iconURL: interaction.user.displayAvatarURL({ dynamic: true })
             });
 
