@@ -20,20 +20,39 @@ module.exports = {
         const voiceChannel = member.voice.channel;
 
         if (!voiceChannel) {
-            return interaction.followUp({ content: 'Не вижу тебя, где ты?' });
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("❌ Ошибка")
+                .setDescription("Не вижу тебя, где ты?");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
 
         if (!player) {
-            return interaction.followUp({ content: 'Играть нечего!' });
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("❌ Ошибка")
+                .setDescription("Играть нечего!");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
 
         const botVoiceChannel = player.voiceId;
         if (voiceChannel.id !== botVoiceChannel) {
-            return interaction.followUp({ content: 'Я в другой компании сейчас!' });
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("❌ Ошибка")
+                .setDescription("Я сейчас в другой компании!");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
 
         try {
-            const result = await kazagumo.search(query, { requester: interaction.member });
+            const result = await kazagumo.search(query, { requester: member });
+            if (!result || result.tracks.length === 0) {
+                const noResultEmbed = new EmbedBuilder()
+                    .setColor(0xFF0000)
+                    .setTitle("❌ Ничего не найдено")
+                    .setDescription("Попробуйте другую ссылку или запрос.");
+                return interaction.followUp({ embeds: [noResultEmbed], ephemeral: true });
+            }
 
             player.queue.unshift(...result.tracks);
 
@@ -50,7 +69,11 @@ module.exports = {
 
                 } catch (error) {
                     console.error(error);
-                    await interaction.followUp({ content: 'У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.' });
+                    const errorEmbed = new EmbedBuilder()
+                        .setColor(0xFF0000)
+                        .setTitle("❌ Ошибка")
+                        .setDescription("У меня сломалась балалайка, попробуйте снова.");
+                    await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
                 }
             }
         };

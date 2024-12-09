@@ -22,29 +22,71 @@ module.exports = {
     async execute(interaction, client) {
         await interaction.deferReply({ ephemeral: false });
         const query = interaction.options.getString('url');
-        let repeatmode = interaction.options.getString('source');
+        const repeatmode = interaction.options.getString('source');
 
         const kazagumo = client.kazagumo;
-        const voice_channel = interaction.member.voice.channel;
-        if (!voice_channel) return interaction.followUp({ content: 'Не вижу тебя, где ты?' });
+        const voiceChannel = interaction.member.voice.channel;
 
-        let player = await kazagumo.createPlayer({
-            guildId: interaction.guild.id,
-            textId: interaction.channel.id,
-            voiceId: voice_channel.id,
-            volume: 100,
-            deaf: true,
-        });
+        if (!voiceChannel) {
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("❌ Ошибка")
+                .setDescription("Не вижу тебя, где ты?");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        }
 
-        const bot_voice_channel = player.voiceId;
-        if (voice_channel != bot_voice_channel) return interaction.followUp({ content: `Я в другом канале!` });
+        let player;
+        try {
+            player = await kazagumo.createPlayer({
+                guildId: interaction.guild.id,
+                textId: interaction.channel.id,
+                voiceId: voiceChannel.id,
+                volume: 100,
+                deaf: true,
+            });
+        } catch (error) {
+            console.error("Ошибка создания плеера:", error);
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("❌ Ошибка")
+                .setDescription("Не удалось подключиться к голосовому каналу.");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        }
 
-        let result = await kazagumo.search(query, { requester: interaction.member.user });
+        const botVoiceChannel = player.voiceId;
+        if (voiceChannel.id !== botVoiceChannel) {
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("❌ Ошибка")
+                .setDescription("Я в другом канале!");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        }
 
-        if (!result.tracks.length) return interaction.followUp("Извини, я не знаю как это играть :'(.");
+        let result;
+        try {
+            result = await kazagumo.search(query, { requester: interaction.member.user });
+        } catch (error) {
+            console.error("Ошибка поиска треков:", error);
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("❌ Ошибка")
+                .setDescription("Не удалось найти треки. Попробуйте снова.");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        }
 
-        if (result.type === "PLAYLIST") for (let track of result.tracks) player.queue.add(track);
-        else await player.queue.add(result.tracks[0]);
+        if (!result.tracks.length) {
+            const noTrackEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("❌ Ошибка")
+                .setDescription("Извини, я не знаю, как это играть :'(.");
+            return interaction.followUp({ embeds: [noTrackEmbed], ephemeral: true });
+        }
+
+        if (result.type === "PLAYLIST") {
+            for (let track of result.tracks) player.queue.add(track);
+        } else {
+            player.queue.add(result.tracks[0]);
+        }
 
         if (!player.playing && !player.paused) player.play();
 

@@ -273,7 +273,7 @@ kazagumo.on('playerStart', (player, track) => {
                     return;
                 }
 
-                currentDuration += 1000;
+                currentDuration += 3000;
 
                 if (currentDuration >= totalDuration || messageDeleted) {
                     clearInterval(interval);
@@ -298,7 +298,7 @@ kazagumo.on('playerStart', (player, track) => {
                     console.error("Ошибка при обновлении сообщения:", error);
                 }
             }
-        }, 1000);
+        }, 3000);
             
         
     // статус бота

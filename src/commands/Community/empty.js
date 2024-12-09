@@ -1,10 +1,9 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const voice = require('@discordjs/voice');
 
 module.exports = {
     data: new SlashCommandBuilder()
-    .setName('empty')
-    .setDescription('Очищает очередь'),
+        .setName('empty')
+        .setDescription('Очищает очередь'),
 
     async execute(interaction, client) {
         await interaction.deferReply();
@@ -13,24 +12,40 @@ module.exports = {
         const player = kazagumo.players.get(interaction.guildId);
 
         if (!interaction.member.voice.channel) {
-            return interaction.followUp({ content: 'Не вижу тебя, где ты?' });
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("❌ Ошибка")
+                .setDescription("Не вижу тебя, где ты?");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
-        if (!player) return interaction.followUp({ content: 'Играть нечего!' });
+
+        if (!player) {
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("❌ Ошибка")
+                .setDescription("Играть нечего!");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        }
 
         try {
-            await player.queue.clear();
-            const stopEmbed = new EmbedBuilder()
-                .setColor(0xff0000)
-                .setTitle(`Репертуар очищен`)
+            player.queue.clear();
+
+            const successEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("🗑️ Репертуар очищен")
                 .setFooter({
-                    text: `Захотел: ${interaction.user.displayName}`,
-                    iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+                    text: `Захотел: ${interaction.user.tag}`,
+                    iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
                 });
 
-            await interaction.followUp({ embeds: [stopEmbed] });
+            await interaction.followUp({ embeds: [successEmbed] });
         } catch (error) {
-            await interaction.followUp("У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.");
-            console.log(error);
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("❌ Ошибка")
+                .setDescription("У меня сломалась балалайка. Попробуй снова позже.");
+            await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+            console.error(error);
         }
-    }
+    },
 };
