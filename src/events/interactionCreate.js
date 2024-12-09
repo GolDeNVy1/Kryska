@@ -5,6 +5,7 @@ module.exports = {
     name: 'interactionCreate',
     async execute(interaction, client) {
         const kazagumo = client.kazagumo;
+
         if (interaction.isCommand()) {
             const command = client.commands.get(interaction.commandName);
 
@@ -14,14 +15,19 @@ module.exports = {
                 await command.execute(interaction, client);
             } catch (error) {
                 console.log(error);
-                await interaction.followUp({
-                    content: 'У меня сломалась балалайка, подожди немного пока мне её починят.',
-                    ephemeral: true
-                });
+                const errorEmbed = new EmbedBuilder()
+                    .setColor(0xFF0000)
+                    .setTitle("❌ Ошибка")
+                    .setDescription("У меня сломалась балалайка, подожди немного пока мне её починят.")
+                    .setFooter({
+                        text: `Запустил: ${interaction.user.tag}`,
+                        iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+                    });
+                await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
             }
         }
 
-        // сохранение истории воспроизведения
+        // Сохранение истории воспроизведения
         kazagumo.on('playerStart', (player) => {
             if (!player.previousTracks) {
                 player.previousTracks = [];
@@ -33,22 +39,50 @@ module.exports = {
                 player.previousTracks = [];
             }
             player.previousTracks.push(track);
-
         });
 
         // Логика для кнопок
         if (interaction.isButton()) {
             await interaction.deferReply({ ephemeral: true });
             const voiceChannel = interaction.member.voice.channel;
-            if (!voiceChannel) return interaction.followUp({ content: 'Не вижу тебя, где ты?', ephemeral: true });            
-            
-            const kazagumo = client.kazagumo;
+
+            if (!voiceChannel) {
+                const errorEmbed = new EmbedBuilder()
+                    .setColor(0xFF0000)
+                    .setTitle("❌ Ошибка")
+                    .setDescription("Не вижу тебя, где ты?")
+                    .setFooter({
+                        text: `Запустил: ${interaction.user.tag}`,
+                        iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+                    });
+                return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+            }
+
             const player = kazagumo.players.get(interaction.guildId);
-            if (!player) return interaction.followUp({ content: 'Играть нечего!', ephemeral: true });
+            if (!player) {
+                const errorEmbed = new EmbedBuilder()
+                    .setColor(0xFF0000)
+                    .setTitle("❌ Ошибка")
+                    .setDescription("Играть нечего!")
+                    .setFooter({
+                        text: `Запустил: ${interaction.user.tag}`,
+                        iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+                    });
+                return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+            }
 
             const botVoiceChannel = player.voiceId;
-            if (voiceChannel.id !== botVoiceChannel) return interaction.followUp({ content: 'Я в другой компании сейчас!', ephemeral: true });
-
+            if (voiceChannel.id !== botVoiceChannel) {
+                const errorEmbed = new EmbedBuilder()
+                    .setColor(0xFF0000)
+                    .setTitle("❌ Ошибка")
+                    .setDescription("Я в другой компании сейчас!")
+                    .setFooter({
+                        text: `Запустил: ${interaction.user.tag}`,
+                        iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+                    });
+                return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+            }
             switch (interaction.customId) {
 
                 case 'pause_resume': {
