@@ -4,53 +4,65 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('pauseresu')
         .setDescription('Остановлюсь и продолжу когда захочешь'),
+
     async execute(interaction, client) {
         await interaction.deferReply();
 
         const voiceChannel = interaction.member.voice.channel;
         if (!voiceChannel) {
-            return interaction.followUp({ content: 'Не вижу тебя, где ты?' });
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("Не вижу тебя, где ты?");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
 
         const kazagumo = client.kazagumo;
         const player = kazagumo.players.get(interaction.guildId);
         if (!player) {
-            return interaction.followUp({ content: 'Играть нечего!' });
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("Играть нечего!");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
 
         const botVoiceChannel = player.voiceId;
         if (voiceChannel.id !== botVoiceChannel) {
-            return interaction.followUp({ content: 'Я сейчас в другой компании!' });
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("Я сейчас в другой компании!");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
 
         try {
-            if (!player.data.get("message")) return interaction.editReply({ content: 'Эмбед не найден, не могу обновить состояние.', ephemeral: true });
-                
-            const message = player.data.get("message");
-            const embed = EmbedBuilder.from(message.embeds[0]);
+            const isPaused = player.paused;
 
-            if (player.paused) {
-                player.pause(false);
-                await interaction.editReply({ content: `<@${interaction.user.id}> ▶️ Продолжаем! ` });
-            } else {
-                player.pause(true);
-                embed.setAuthor({ name: '⏸️ Пауза' });
-                await interaction.editReply({ content: `<@${interaction.user.id}> ⏸️ Пауза!` });
-            }
+            
+            player.pause(!isPaused);
 
-            /* if (player.paused === true) {
-                await player.pause(false);
-                return interaction.followUp({ content: 'Окей, продолжаю.' });
-            } else {
-                await player.pause(true);
-                return interaction.followUp({ content: 'Окей, подожду тебя.' });
-            }*/
-            // Обновляем сообщение с эмбедами
-            await message.edit({ embeds: [embed] });
+            
+            const successEmbed = new EmbedBuilder()
+                .setColor(0xA020F0)
+                .setTitle(isPaused ? "▶️ Продолжаем!" : "⏸️ Пауза")
+                .setDescription(isPaused 
+                    ? `<@${interaction.user.id}> Окей, продолжаем!` 
+                    : `<@${interaction.user.id}> Подождать тебя, да?`)
+                .setFooter({
+                    text: `Запустил: ${interaction.user.tag}`,
+                    iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+                });
+
+            await interaction.editReply({ embeds: [successEmbed] });
 
         } catch (error) {
-            await interaction.followUp("У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.");
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("У меня сломалась балалайка, подожди немного и попробуй снова.");
+            await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
             console.error(error);
         }
     }
-}
+};

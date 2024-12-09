@@ -15,26 +15,60 @@ module.exports = {
                     { name: 'Track', value: 'track' },
                     { name: 'Queue', value: 'queue' },
                 )),
+
     async execute(interaction, client) {
         await interaction.deferReply();
 
         const voiceChannel = interaction.member.voice.channel;
-        if (!voiceChannel) return interaction.followUp({ content: 'Не вижу тебя, где ты?' });
+        if (!voiceChannel) {
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("Не вижу тебя, где ты?");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        }
 
         const kazagumo = client.kazagumo;
         const player = kazagumo.players.get(interaction.guildId);
-        if (!player) return interaction.followUp({ content: 'Играть нечего!' });
+        if (!player) {
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("Играть нечего!");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        }
 
         const botVoiceChannel = player.voiceId;
-        if (voiceChannel.id !== botVoiceChannel) return interaction.followUp({ content: 'Я сейчас в другой компании!' });
+        if (voiceChannel.id !== botVoiceChannel) {
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("Я сейчас в другой компании!");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        }
 
         let repeatMode = interaction.options.getString('mode');
         try {
             await player.setLoop(repeatMode);
-            await interaction.followUp({ content: `<@${interaction.user.id}> Окей, повторяю ${repeatMode}` });
+
+            const successEmbed = new EmbedBuilder()
+                .setColor(0xA020F0)
+                .setTitle("Повторение настроено!")
+                .setDescription(`<@${interaction.user.id}> Окей, повторяю: ${repeatMode === 'none' ? 'выключено' : repeatMode === 'track' ? 'песню' : 'очередь'}.`)
+                .setFooter({
+                    text: `Запустил: ${interaction.user.tag}`,
+                    iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+                });
+
+            await interaction.followUp({ embeds: [successEmbed] });
+
         } catch (error) {
-            await interaction.followUp({ content: 'У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.' });
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("У меня сломалась балалайка, подожди немного и попробуй снова.");
+            await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
             console.error(error);
         }
     }
-}
+};

@@ -15,22 +15,55 @@ module.exports = {
     async execute(interaction, client) {
         await interaction.deferReply();
         const voiceChannel = interaction.member.voice.channel;
-        if (!voiceChannel) return interaction.followUp({ content: 'Не вижу тебя, ты где?' });
+
+        if (!voiceChannel) {
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("Не вижу тебя, ты где?");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        }
 
         const kazagumo = client.kazagumo;
         const player = kazagumo.players.get(interaction.guildId);
-        if (!player) return interaction.followUp({ content: 'Играть нечего!' });
+
+        if (!player) {
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("Играть нечего!");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        }
 
         const botVoiceChannel = player.voiceId;
-        if (voiceChannel.id !== botVoiceChannel) return interaction.followUp({ content: 'Я в другой компании сейчас!' });
+        if (voiceChannel.id !== botVoiceChannel) {
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("Я в другой компании сейчас!");
+            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        }
 
         const volume = interaction.options.getInteger('volume');
+
         try {
             await player.setVolume(volume);
-            await interaction.followUp({ content: `Громкость изменена до ${volume} человеком <@${interaction.user.id}>` });
+            const successEmbed = new EmbedBuilder()
+                .setColor(0xA020F0)
+                .setTitle("Громкость изменена")
+                .setDescription(`Громкость изменена до **${volume}**`)
+                .setFooter({ 
+                    text: `Запустил: ${interaction.user.displayName}`,
+                    iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+                });
+            await interaction.followUp({ embeds: [successEmbed] });
         } catch (error) {
-            await interaction.followUp("У меня сломалась балалайка, подожди немного и покажи мне опять то, что ты хочешь чтобы я сыграла.");
+            const errorEmbed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setTitle("Ошибка")
+                .setDescription("У меня сломалась балалайка, подожди немного и попробуй снова.");
+            await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
             console.error(error);
         }
     }
-}
+};
