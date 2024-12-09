@@ -119,10 +119,10 @@ kazagumo.on('playerStart', (player, track) => {
         embedTitle = `🎸Сейчас играю🎸`;}*/
 
     const platformIcons = {
-        youtube: 'https://i.imgur.com/ICj7Eip.gif',
+        youtube: 'https://i.imgur.com/AqKIfic.gif',
         spotify: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGtwaXk4YjV5eTRkcHY2MmxhaWxxYWl6cmQwbnhmNHlueGxhOWJndCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EFGXDUBXcUd131C0CR/giphy.gif',
         soundcloud: 'https://media4.giphy.com/media/kKJPSx14GFUyAJ8VoH/giphy.gif?cid=6c09b9528qnptbim13jbqmhnqjnys6fykuvk9zhhdphzfx26&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s',
-        applemusic: 'https://i.imgur.com/iK3cwrZ.gif',
+        applemusic: 'https://i.imgur.com/3Lm3s9i.gif',
         deezer: 'https://i.imgur.com/q7UeOdK.gif',
         jiosaavn: 'https://i.imgur.com/N9Nt80h.png',
         default: 'https://thumbs2.imgbox.com/4f/9c/adRv6TPw_t.png'
@@ -143,8 +143,8 @@ kazagumo.on('playerStart', (player, track) => {
         spotify: 0x1DB954,
         soundcloud: 0xff3300,
         applemusic: 0xfc3c44,
-        deezer:0x5f0a87,
-        jiosaavn:0x008A78,
+        deezer: 0x5f0a87,
+        jiosaavn: 0x008A78,
         default: 0xffff00,
     }
     
@@ -273,7 +273,7 @@ kazagumo.on('playerStart', (player, track) => {
                     return;
                 }
 
-                currentDuration += 1000;
+                currentDuration += 3000;
 
                 if (currentDuration >= totalDuration || messageDeleted) {
                     clearInterval(interval);
@@ -298,7 +298,7 @@ kazagumo.on('playerStart', (player, track) => {
                     console.error("Ошибка при обновлении сообщения:", error);
                 }
             }
-        }, 1000);
+        }, 3000);
             
         
     // статус бота
