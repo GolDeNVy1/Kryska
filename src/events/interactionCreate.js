@@ -40,7 +40,6 @@ module.exports = {
             }
             player.previousTracks.push(track);
         });
-
         // Логика для кнопок
         if (interaction.isButton()) {
             await interaction.deferReply({ ephemeral: true });
@@ -426,7 +425,6 @@ module.exports = {
                             ephemeral: true 
                         });
                     }
-                    const userMention = `<@${interaction.user.id}>`;
                     const tracks = player.queue.slice(0, 30);
                     const queueEmbed = new EmbedBuilder()
                         .setColor(0xff6347)
@@ -447,7 +445,7 @@ module.exports = {
                             const trackTitle = track.title.length > 35 
                                 ? `${track.title.substring(0, 35)}...` 
                                 : track.title;
-                            return `\`${index + 1}.\` [${trackTitle}](${track.uri}) - ${track.author}: ${userMention}`;
+                            return `\`${index + 1}.\` [${trackTitle}](${track.uri}) - ${track.author}: ${track.requester}`;
                         });
 
                         let trackChunks = [];
