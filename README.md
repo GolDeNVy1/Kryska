@@ -3,7 +3,7 @@
 <div align="center">
   <h2>🐭 Kryska - The Mischievous Music Bot 🐭</h2>
   <p align="center">
-    <img src="[https://stihi.ru/pics/2015/07/31/2652.jpg](https://i.pinimg.com/736x/cb/b4/b7/cbb4b734101329d6a41591541408ba12.jpg)" alt="Kryska the Rat" style="border-radius: 50%; width: 200px; height: 200px;">
+    <img src="https://i.pinimg.com/736x/cb/b4/b7/cbb4b734101329d6a41591541408ba12.jpg" alt="Kryska the Rat" style="border-radius: 50%; width: 200px; height: 200px;">
   </p>
   <p align="center">
     Meet Kryska, your cheeky and charming Discord music companion. With Kryska around, your server will never have a dull moment again! Designed to deliver high-quality tunes and some rodent-inspired fun, Kryska guarantees a squeak-tacular experience.
