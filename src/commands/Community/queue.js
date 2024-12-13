@@ -19,13 +19,12 @@ module.exports = {
         if (voiceChannel.id !== botVoiceChannel) return interaction.followUp({ content: 'Я сейчас в другой компании!', ephemeral: true });
 
         const tracks = player.queue.slice(0, 30);
-        const userMention = `<@${interaction.user.id}>`;
         const embed = new EmbedBuilder()
             .setColor(0xff6347)
             .setTitle('🎶 Мой репертуар на сегодня')
             .setThumbnail(player.queue.current.thumbnail || null)
             .setDescription(`**Сейчас играю:**\n[${player.queue.current.title}](${player.queue.current.uri})\n\n**Буду играть следующим:**`)
-            .setFooter({ text: `Песен в очереди: ${player.queue.length}\nЗапустил: ${interaction.user.displayName}`,
+            .setFooter({ text: `Песен в очереди: ${player.queue.length}\nЗапустил: <@${track.requester.id}>`,
                 iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
 
         if (tracks.length === 0) {
@@ -35,7 +34,7 @@ module.exports = {
                 const trackTitle = track.title.length > 20 
                     ? `${track.title.substring(0, 20)}...` 
                     : track.title;
-                return `\`${index + 1}.\` [${trackTitle}](${track.uri}) - ${track.author}: ${userMention}`;
+                return `\`${index + 1}.\` [${trackTitle}](${track.uri}) - ${track.author}: ${track.requester}`;
             });
 
             let trackString = trackList.join('\n');
