@@ -38,14 +38,15 @@
 
 #### 🐁 **Option 1: The Docker Wheel (Recommended)**  
 1. [Install Docker](https://www.docker.com/get-started) on your system.  
-2. Clone Kryska’s repository:  
+2. [Install Git](https://git-scm.com/downloads) on your system. 
+3. Clone Kryska’s repository:  
    ```bash
    git clone https://github.com/GolDeNVy1/Kryska.git
    ```
-3. Fill out the config files (`application.yml` and `.env`) with your credentials.  
-4. Let Kryska run wild:  
+4. Fill out the config files (`application.yml` and `.env`) with your credentials.  
+5. Let Kryska run wild:  
    ```bash
-   docker compose up -d
+   ./entrypoint.sh
    ```
 
 #### 🐁 **Option 2: Classic Setup (For the Brave)**  

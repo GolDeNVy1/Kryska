@@ -173,14 +173,14 @@ kazagumo.on('playerStart', (player, track) => {
     };
 
     const createProgressBar = (current, total) => {
-    const barLength = 30;
+    const barLength = 16;
     let progressIndex = Math.floor((current / total) * barLength);
     if (progressIndex >= barLength) progressIndex = barLength - 1;
     const before = '▬'.repeat(progressIndex);
     const circle = '🔘';
     const after = '▬'.repeat(barLength - progressIndex - 1);
 
-    return `\`${before}${circle}${after}\``;
+    return `${before}${circle}${after}`;
     };
 
     const embedDescription = `## [${track.title}](${track.realUri})`;
