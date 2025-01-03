@@ -74,6 +74,9 @@ web_modules/
 
 # dotenv environment variable files
 application.yml
+test.js
+package-lock.json
+entrypoint1.sh
 .env
 .env.development.local
 .env.test.local

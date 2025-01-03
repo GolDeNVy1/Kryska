@@ -1,11 +1,8 @@
-const { EmbedBuilder, TextChannel, VoiceChannel } = require('discord.js');
-const { bot } = require("../../index");
 const { Events } = require('kazagumo');
 
 module.exports = {
     name: Events.PlayerEnd,
-    async execute(player, track) {
-kazagumo.on('playerEnd', async (player, track) => {
+    async execute(client, player, track) {
     const lastMessage = player.data.get("message");
     if (lastMessage) {
         try {
@@ -26,6 +23,4 @@ kazagumo.on('playerEnd', async (player, track) => {
         }
 
         player.data.delete("message");
-    }
-});
-}};
+    }}};

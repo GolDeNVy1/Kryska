@@ -3,8 +3,7 @@ const { Events } = require('kazagumo');
 
 module.exports = {
     name: Events.PlayerError,
-    async execute(player, track, err) {
-    kazagumo.on('playerError', (player, error) => {
+    async execute(client, player, track, err) {
         console.error(`Player error in guild ${player.guildId}: ${error}`);
 
         const textChannel = client.channels.cache.get(player.textId);
@@ -17,5 +16,4 @@ module.exports = {
 
             textChannel.send({ embeds: [errorEmbed] });
         }
-    });
-}};
+    }};
