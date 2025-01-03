@@ -28,21 +28,26 @@ module.exports = {
                 const channel = client.channels.cache.get(player.textId);
                 if (channel) await channel.send({ embeds: [embed] });
 
-                if (disconnectTimeout) clearTimeout(disconnectTimeout);
-
+                if (player.data.has("disconnectTimeout")) {
+                    clearTimeout(player.data.get("disconnectTimeout"));
+                    player.data.delete("disconnectTimeout");
+                }
+                
                 disconnectTimeout = setTimeout(async () => {
-
-                    if (!player.queue.length) {  
+                    if (!player.queue.length) {
                         await player.destroy();
-
+                
                         const embed = new EmbedBuilder()
                             .setColor(0xff0000)
                             .setDescription('Я пойду, у меня ещё много дел, позовёте когда будет скучно без музыки ;)');
-
+                
                         const textChannel = client.channels.cache.get(player.textId);
                         if (textChannel) await textChannel.send({ embeds: [embed] });
-                    } 
+                    }
                 }, 60000);
+                
+                player.data.set("disconnectTimeout", disconnectTimeout);
+                
             }
             await pickPresence();
         

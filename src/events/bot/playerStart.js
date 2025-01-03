@@ -5,6 +5,11 @@ module.exports = {
     name: Events.PlayerStart,
     async execute(client, player, track,) {
 
+        if (player.data.has("disconnectTimeout")) {
+            clearTimeout(player.data.get("disconnectTimeout"));
+            player.data.delete("disconnectTimeout");
+        }
+        
         const platformIcons = {
             youtube: 'https://i.imgur.com/AqKIfic.gif',
             spotify: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGtwaXk4YjV5eTRkcHY2MmxhaWxxYWl6cmQwbnhmNHlueGxhOWJndCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EFGXDUBXcUd131C0CR/giphy.gif',
