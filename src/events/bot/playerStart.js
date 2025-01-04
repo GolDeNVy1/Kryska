@@ -182,17 +182,28 @@ module.exports = {
         // Действия по завершению, если игрок покидает канал
         setTimeout(async () => {
             if (!player) return;
-
+        
             const voiceChannel = client.channels.cache.get(player.voiceId);
             if (voiceChannel && voiceChannel.members && voiceChannel.members.size === 1) {
-                await player.destroy();
-                await pickPresence();
+                const message = player.data.get("message");
+                
+                if (message) {
+                    try {
+                        await message.delete();
+                    } catch (error) {
+                        console.error("Ошибка при удалении сообщения:", error);
+                    }
+                }
+        
                 const embed = new EmbedBuilder()
                     .setColor(0xff0000)
                     .setDescription('Я ушла, потому что одной играть скучно.');
-
+        
                 const textChannel = client.channels.cache.get(player.textId);
                 if (textChannel) await textChannel.send({ embeds: [embed] });
+                await player.destroy();
+                await pickPresence();
             }
         }, 60000);
+        
 }};
