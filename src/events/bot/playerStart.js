@@ -190,6 +190,7 @@ module.exports = {
                 if (message) {
                     try {
                         await message.delete();
+                        player.data.delete("message");
                     } catch (error) {
                         console.error("Ошибка при удалении сообщения:", error);
                     }

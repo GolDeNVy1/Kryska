@@ -48,6 +48,10 @@
    ```bash
    ./entrypoint.sh
    ```
+6. And finnaly I recomend you to clean your docker when you dont use it with command
+   ```bash
+   ./clean_your_docker.sh
+   ```
 
 #### 🐁 **Option 2: Classic Setup (For the Brave)**  
 1. Clone the repository:  
