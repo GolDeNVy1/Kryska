@@ -1,4 +1,4 @@
-const { EmbedBuilder, TextChannel, VoiceChannel } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { Events } = require('kazagumo');
 
 module.exports = {

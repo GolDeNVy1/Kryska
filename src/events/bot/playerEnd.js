@@ -1,15 +1,12 @@
 const { Events } = require('kazagumo');
 
-    module.exports = {
-    name: Events.PlayerEnd,
-    async execute(client, player, track) {
+module.exports = {
+name: Events.PlayerEnd,
+async execute(client, player, track) {
     const lastMessage = player.data.get("message");
-    if (lastMessage) {
+    if (lastMessage && lastMessage.deletable) {
         try {
-            const fetchedMessage = await lastMessage.channel.messages.fetch(lastMessage.id).catch(() => null);
-                
-
-                await fetchedMessage.delete();
+                await lastMessage.delete();
             } catch (error) {
                 if (error.code === 10008) {
                     console.warn(`Сообщение с ID ${lastMessage.id} уже удалено.`);
@@ -19,4 +16,6 @@ const { Events } = require('kazagumo');
             }
 
             player.data.delete("message");
-        }}};
+        }
+    }
+};

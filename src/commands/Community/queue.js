@@ -24,7 +24,7 @@ module.exports = {
             .setTitle('🎶 Мой репертуар на сегодня')
             .setThumbnail(player.queue.current.thumbnail || null)
             .setDescription(`**Сейчас играю:**\n[${player.queue.current.title}](${player.queue.current.uri})\n\n**Буду играть следующим:**`)
-            .setFooter({ text: `Песен в очереди: ${player.queue.length}\nЗапустил: <@${track.requester.id}>`,
+            .setFooter({ text: `Песен в очереди: ${player.queue.length}\nЗапустил: ${interaction.user.tag}`,
                 iconURL: interaction.user.displayAvatarURL({ dynamic: true }) });
 
         if (tracks.length === 0) {

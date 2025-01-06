@@ -9,12 +9,14 @@ const { join } = path;
 const { Connectors } = require("shoukaku");
 const { Kazagumo } = require("kazagumo");
 
-const client = new Client({ intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildVoiceStates,
-] });
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildVoiceStates,
+    ],
+});
 
 client.commands = new Collection();
 
@@ -30,7 +32,7 @@ const Nodes = [
         url: 'lavalink:2333',
         auth: 'youshallnotpass',
         secure: false,
-    }
+    },
 ];
 
 // Kazagumo
@@ -41,17 +43,19 @@ const kazagumo = new Kazagumo(
         send: (guildId, payload) => {
             const guild = client.guilds.cache.get(guildId);
             if (guild) guild.shard.send(payload);
-        }
-    }, new Connectors.DiscordJS(client), Nodes);
-    
+        },
+    },
+    new Connectors.DiscordJS(client),
+    Nodes
+);
 
-kazagumo.shoukaku.on('ready', (name) => console.log(`Lavalink ${name}: Ready!`));
+kazagumo.shoukaku.on('ready', name => console.log(`Lavalink ${name}: Ready!`));
 kazagumo.shoukaku.on('error', (name, error) => console.error(`Lavalink ${name}: Error Caught`, error));
 kazagumo.shoukaku.on('close', (name, code, reason) => console.warn(`Lavalink ${name}: Closed, Code ${code}, Reason ${reason || 'No reason'}`));
 kazagumo.shoukaku.on('debug', (name, info) => console.debug(`Lavalink ${name}: Debug`, info));
-kazagumo.shoukaku.on('disconnect', (name) => {
+kazagumo.shoukaku.on('disconnect', name => {
     console.warn(`Lavalink ${name}: Disconnected. Attempting to reconnect...`);
-    // оно по идее не работает но это для перезапуска в случае неудачного подключения к лаве
+
     const node = kazagumo.shoukaku.nodes.get(name);
 
     if (!node) {
@@ -80,7 +84,7 @@ kazagumo.shoukaku.on('disconnect', (name) => {
         console.log(`Reconnecting to node ${name}...`);
         node.connect()
             .then(() => console.log(`Node ${name} reconnected successfully!`))
-            .catch((error) => {
+            .catch(error => {
                 console.error(`Failed to reconnect to node ${name}:`, error);
                 setTimeout(reconnect, 3000);
             });
@@ -88,8 +92,8 @@ kazagumo.shoukaku.on('disconnect', (name) => {
 
     reconnect();
 });
-// дальше всё работает
 
+// Main async function
 (async () => {
     for (const file of functions) {
         const func = require(`./functions/${file}`);
@@ -99,6 +103,7 @@ kazagumo.shoukaku.on('disconnect', (name) => {
             console.warn(`Файл ${file} не экспортирует функцию.`);
         }
     }
+
     client.handleEvents(eventFiles, "./src/events/discord/");
     await registerKazagumoEvents(kazagumo);
     client.handleCommands(commandFolders, "./src/commands");
@@ -114,12 +119,11 @@ async function registerKazagumoEvents(kazagumo) {
         return;
     }
     
-    const eventFiles = fs.readdirSync(eventDir).filter((file) => !file.endsWith(".map"));
+    const eventFiles = fs.readdirSync(eventDir).filter(file => !file.endsWith(".map"));
 
     for (const file of eventFiles) {
         try {
             const eventPath = path.join(eventDir, file);
-
             const event = require(eventPath);
 
             if (event?.name && typeof event.execute === 'function') {
@@ -139,6 +143,7 @@ async function registerKazagumoEvents(kazagumo) {
         }
     }
 }
+
 
 
     

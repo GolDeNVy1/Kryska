@@ -17,21 +17,6 @@ module.exports = (client) => {
             }
         }
 
-        const commands = [
-            {
-                name: 'loop',
-                description: 'Повторяет одну и ту же песню',
-            },
-            {
-                name: 'empty',
-                description: 'Очищает репертуар',
-            },
-            {
-                name: 'help',
-                description: 'Помогает с навигацией'
-
-            },
-        ];
 
         const rest = new REST().setToken(process.env.token);
 
