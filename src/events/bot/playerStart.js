@@ -115,15 +115,14 @@ module.exports = {
                         return;
                     }
 
-                    const fetchedMessage = await message.channel.messages.fetch(message.id).catch(() => null);
-                    if (!fetchedMessage) {
+                    if (!message) {
                         clearInterval(interval);
                         return;
                     }
 
                     const updatedEmbed = EmbedBuilder.from(isPlayingEmbed)
                         .setDescription(`${embedDescription}\n\n${createProgressBar(currentDuration, track.length)}  ${formatTime(currentDuration)} / ${formatTime(track.length)}`);
-                    await fetchedMessage.edit({ embeds: [updatedEmbed] });
+                    await message.edit({ embeds: [updatedEmbed] });
                 }, 3000);
 
                 client.user.setActivity({

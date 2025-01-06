@@ -38,7 +38,7 @@ const Nodes = [
 // Kazagumo
 const kazagumo = new Kazagumo(
     {
-        defaultSearchEngine: "soundcloud",
+        defaultSearchEngine: "youtube",
         defaultYoutubeThumbnail: "mqdefault",
         send: (guildId, payload) => {
             const guild = client.guilds.cache.get(guildId);
