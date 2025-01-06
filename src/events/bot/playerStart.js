@@ -122,7 +122,9 @@ module.exports = {
 
                     const updatedEmbed = EmbedBuilder.from(isPlayingEmbed)
                         .setDescription(`${embedDescription}\n\n${createProgressBar(currentDuration, track.length)}  ${formatTime(currentDuration)} / ${formatTime(track.length)}`);
-                    await message.edit({ embeds: [updatedEmbed] });
+                    try{
+                        await message.edit({ embeds: [updatedEmbed] });
+                    } catch(error) {}
                 }, 3000);
 
                 client.user.setActivity({
@@ -138,6 +140,12 @@ module.exports = {
             if (voiceChannel?.members.size === 1) {
                 const message = player.data.get("message");
                 if (message) await message.delete().catch(console.error);
+                const embed = new EmbedBuilder()
+                    .setColor(0xff0000)
+                    .setDescription('Я ушла, потому что одной играть скучно.');
+
+                const textChannel = client.channels.cache.get(player.textId);
+                if (textChannel) await textChannel.send({ embeds: [embed] });
                 await player.destroy();
             }
         }, 60000);
