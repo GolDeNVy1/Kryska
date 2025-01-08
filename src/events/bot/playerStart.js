@@ -69,7 +69,7 @@ module.exports = {
         const isPlayingEmbed = new EmbedBuilder()
             .setColor(color)
             .setAuthor({ name: '🎸 Сейчас играю 🎸', iconURL: icon })
-            .setDescription(embedDescription)
+            .setDescription(`${embedDescription} ${createProgressBar(0, track.length)}  ${formatTime(0)} / ${formatTime(track.length)}`)
             .addFields(
                 { name: '🎶 Заказал', value: `<@${track.requester.id}>`, inline: true },
                 { name: '🎤 Автор', value: track.author, inline: true },
@@ -80,7 +80,6 @@ module.exports = {
                 text: `Навожу суету в: "${botVoiceChannelName}" 😎`,
                 iconURL: "https://media.tenor.com/aaEMtGfZFbkAAAAi/rat-spinning.gif"
             })
-            .setDescription(`${createProgressBar(0, track.length)}  ${formatTime(0)} / ${formatTime(track.length)}`);
 
         const row1 = new ActionRowBuilder()
             .addComponents(
