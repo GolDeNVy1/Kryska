@@ -22,7 +22,7 @@ module.exports = {
             spotify: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGtwaXk4YjV5eTRkcHY2MmxhaWxxYWl6cmQwbnhmNHlueGxhOWJndCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EFGXDUBXcUd131C0CR/giphy.gif',
             soundcloud: 'https://media4.giphy.com/media/kKJPSx14GFUyAJ8VoH/giphy.gif?cid=6c09b9528qnptbim13jbqmhnqjnys6fykuvk9zhhdphzfx26&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s',
             applemusic: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMWVkaGp6ZXliMjduc3l4YW56NmZsMGQycGo0dmNhcWZhcnp5ZnBjeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/uNgsDhnMZVePcoPOXE/giphy.gif',
-            deezer: 'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWYxYXh1MjF2Nmh6aHpubWZzb3pwcTFwMXEydWNmbWF2cHY0b2VkcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/e2x8XyAm1JJxxa7agW/giphy.gif',
+            deezer: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNzM1azB6bzh3bTN5ZW4zaWw3MngwZ2dyb3R3MXo5dDl0b2UwaThyayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/ktkyNAvYlMBU9UBYaQ/giphy.gif',
             jiosaavn: 'https://i.imgur.com/N9Nt80h.png',
             default: 'https://thumbs2.imgbox.com/4f/9c/adRv6TPw_t.png'
         };
