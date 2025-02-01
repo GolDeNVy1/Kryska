@@ -69,7 +69,7 @@ module.exports = {
         const isPlayingEmbed = new EmbedBuilder()
             .setColor(color)
             .setAuthor({ name: '🎸 Сейчас играю 🎸', iconURL: icon })
-            .setDescription(`${embedDescription} ${createProgressBar(0, track.length)}  ${formatTime(0)} / ${formatTime(track.length)}`)
+            .setDescription(`${embedDescription}\n\n${createProgressBar(0, track.length)}  ${formatTime(0)} / ${formatTime(track.length)}`)
             .addFields(
                 { name: '🎶 Заказал', value: `<@${track.requester.id}>`, inline: true },
                 { name: '🎤 Автор', value: track.author, inline: true },
