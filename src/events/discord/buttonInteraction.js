@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, ActivityType } = require('discord.js');
 
 
 module.exports = {
@@ -187,6 +187,24 @@ module.exports = {
                             console.error('Error deleting "Now Playing" message:', error);
                         }
                         player.data.delete("message");
+
+                    } await pickPresence();
+    
+
+                    async function pickPresence () {
+                        try {
+                            await client.user.setPresence({
+                                activities: [
+                                    {
+                                        name: "Ем сыр 🧀",
+                                        type: ActivityType.Custom,
+                                    },
+                                ],
+                                status: 'idle',
+                            })
+                        } catch (error) {
+                            console.error(error);
+                        }
                     }
             
                     player.destroy();
