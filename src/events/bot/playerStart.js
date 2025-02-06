@@ -18,11 +18,11 @@ module.exports = {
 
         // Иконки платформ
         const platformIcons = {
-            youtube: './src/!media/youtube.gif',
-            spotify: './src/!media/spotify.gif',
-            soundcloud: './src/!media/soundcloud.gif',
-            applemusic: './src/!media/apple.gif',
-            deezer: './src/!media/deezer.gif',
+            youtube: 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2JkbXN0czltNzJ6cTY0ZThweG41d3YzZjYya28wdGlzanhqdXNwbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/ROvaExEAr1ZcUkzjM5/giphy.gif',
+            spotify: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExODB6amdtNWJhcTA3b3NmNDlzZGI2M3Q1eDZmdHFyY2xsNGNkdTNrMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/SOorx5SrvMZbz2IdXZ/giphy.gif',
+            soundcloud: 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExajVkd3Vxa3VsbGxmeWdpdHc0cGdvMHV4cWJyZWoxZGNpdzk3MzltbiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/xIw0t64GoHTGNIKzes/giphy.gif',
+            applemusic: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExOGxubDg0Y3NzZjBwdmNxN3JhMGplYnEyeHE5OTQ0MnZkNHBsYmM2eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/uNgsDhnMZVePcoPOXE/giphy.gif',
+            deezer: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWk4NDB4eTBxYTF5enh6bG1qZml3ZW1mdmkzZm9xNjdwMW5panpnMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/ktkyNAvYlMBU9UBYaQ/giphy.gif',
             jiosaavn: 'https://i.imgur.com/N9Nt80h.png',
             default: 'https://thumbs2.imgbox.com/4f/9c/adRv6TPw_t.png'
         };
