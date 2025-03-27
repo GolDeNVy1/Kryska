@@ -7,7 +7,7 @@ module.exports = {
         .setDMPermission(false),
 
     async execute(interaction, client) {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply();
 
         const voiceChannel = interaction.member.voice.channel;
         if (!voiceChannel) {
@@ -41,33 +41,33 @@ module.exports = {
             const previousTrack = player.getPrevious();
             if (previousTrack) {
                 await player.play(player.getPrevious(true));
-    
+
                 const previousTrackEmbed = new EmbedBuilder()
                     .setColor(0xA020F0)
                     .setTitle("⏮ Воспроизведение предыдущего трека")
                     .setDescription(`Теперь играет: **${previousTrack.title}**`)
                     .setFooter({
-                        text: `Запросил: ${interaction.user.tag}`,
+                        text: `Запросил: ${interaction.user.displayName}`,
                         iconURL: interaction.user.displayAvatarURL({ dynamic: true })
                     });
-    
+
                 await interaction.followUp({ embeds: [previousTrackEmbed] });
             } else {
                 const noPreviousTrackEmbed = new EmbedBuilder()
                     .setColor(0xFF0000)
                     .setTitle("❌ Ошибка")
                     .setDescription("Извини, я не помню, что было до этого. Отправь ссылку заново!");
-    
+
                 await interaction.followUp({ embeds: [noPreviousTrackEmbed], ephemeral: true });
             }
         } catch (error) {
             console.error(error);
-    
+
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
                 .setTitle("❌ Ошибка")
                 .setDescription("Произошла ошибка при попытке воспроизвести предыдущий трек. Попробуйте ещё раз.");
-    
+
             await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
     }
