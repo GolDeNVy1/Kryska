@@ -52,7 +52,7 @@ module.exports = {
 
                 const successEmbed = new EmbedBuilder()
                     .setColor(0xA020F0)
-                    .setTitle("Трек пропущен")
+                    .setTitle("⏭ Трек пропущен")
                     .setDescription(`<@${interaction.user.id}> пропустил(a): **${skippedTrackTitle}**! Теперь следующая.`)
                     .setFooter({ 
                         text: `Запустил: ${interaction.user.displayName}`,
@@ -76,7 +76,7 @@ module.exports = {
 
                 const successEmbed = new EmbedBuilder()
                     .setColor(0xA020F0)
-                    .setTitle("Трек пропущен")
+                    .setTitle("⏭ Трек пропущен")
                     .setDescription(`<@${interaction.user.id}> пропустил(a) до: № \`${index}\`. **${skippedToTrackTitle}**!`)
                     .setFooter({ 
                         text: `Запустил: ${interaction.user.displayName}`,

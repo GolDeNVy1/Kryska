@@ -53,7 +53,7 @@ module.exports = {
 
             const successEmbed = new EmbedBuilder()
                 .setColor(0xA020F0)
-                .setTitle("Повторение настроено!")
+                .setTitle("🔄 Повторение настроено!")
                 .setDescription(`<@${interaction.user.id}> Окей, повторяю: ${repeatMode === 'none' ? 'выключено' : repeatMode === 'track' ? 'песню' : 'очередь'}.`)
                 .setFooter({
                     text: `Запустил: ${interaction.user.tag}`,

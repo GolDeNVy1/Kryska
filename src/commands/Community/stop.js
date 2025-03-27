@@ -41,7 +41,7 @@ module.exports = {
 
             const successEmbed = new EmbedBuilder()
                 .setColor(0xA020F0)
-                .setTitle("Концерт окончен")
+                .setTitle("🎼 Концерт окончен")
                 .setDescription(`Ладно, с вас хватит, <@${interaction.user.id}>, ещё увидимся 😉`)
                 .setFooter({ 
                     text: `Запустил: ${interaction.user.displayName}`,
