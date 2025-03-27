@@ -18,11 +18,11 @@ module.exports = {
 
         // Иконки платформ
         const platformIcons = {
-            youtube: 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2JkbXN0czltNzJ6cTY0ZThweG41d3YzZjYya28wdGlzanhqdXNwbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/ROvaExEAr1ZcUkzjM5/giphy.gif',
-            spotify: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExODB6amdtNWJhcTA3b3NmNDlzZGI2M3Q1eDZmdHFyY2xsNGNkdTNrMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/SOorx5SrvMZbz2IdXZ/giphy.gif',
-            soundcloud: 'https://cdn.discordapp.com/attachments/1131615683189407856/1337201276005650442/soundcloud.gif?ex=67a6953c&is=67a543bc&hm=eb85b5baf1fa16b5aeb898fbed41ae35864775ec6924dfecf9dfdf90449eebd8&',
-            applemusic: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExOGxubDg0Y3NzZjBwdmNxN3JhMGplYnEyeHE5OTQ0MnZkNHBsYmM2eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/uNgsDhnMZVePcoPOXE/giphy.gif',
-            deezer: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWk4NDB4eTBxYTF5enh6bG1qZml3ZW1mdmkzZm9xNjdwMW5panpnMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/ktkyNAvYlMBU9UBYaQ/giphy.gif',
+            youtube: 'https://i.imgur.com/AqKIfic.gif',
+            spotify: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGtwaXk4YjV5eTRkcHY2MmxhaWxxYWl6cmQwbnhmNHlueGxhOWJndCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EFGXDUBXcUd131C0CR/giphy.gif',
+            soundcloud: 'https://media4.giphy.com/media/kKJPSx14GFUyAJ8VoH/giphy.gif?cid=6c09b9528qnptbim13jbqmhnqjnys6fykuvk9zhhdphzfx26&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s',
+            applemusic: 'https://i.imgur.com/3Lm3s9i.gif',
+            deezer: 'https://i.imgur.com/q7UeOdK.gif',
             jiosaavn: 'https://i.imgur.com/N9Nt80h.png',
             default: 'https://thumbs2.imgbox.com/4f/9c/adRv6TPw_t.png'
         };
@@ -69,7 +69,7 @@ module.exports = {
         const isPlayingEmbed = new EmbedBuilder()
             .setColor(color)
             .setAuthor({ name: '🎸 Сейчас играю 🎸', iconURL: icon })
-            .setDescription(`${embedDescription}\n\n${createProgressBar(0, track.length)}  ${formatTime(0)} / ${formatTime(track.length)}`)
+            .setDescription(`${embedDescription} ${createProgressBar(0, track.length)}  ${formatTime(0)} / ${formatTime(track.length)}`)
             .addFields(
                 { name: '🎶 Заказал', value: `<@${track.requester.id}>`, inline: true },
                 { name: '🎤 Автор', value: track.author, inline: true },

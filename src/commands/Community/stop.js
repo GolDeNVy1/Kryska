@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActivityType } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -55,23 +55,6 @@ module.exports = {
                 .setDescription("У меня сломалась балалайка, подожди немного и попробуй снова.");
             await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
             console.error(error);
-        } await pickPresence();
-    
-
-        async function pickPresence () {
-            try {
-                await client.user.setPresence({
-                    activities: [
-                        {
-                            name: "Ем сыр 🧀",
-                            type: ActivityType.Custom,
-                        },
-                    ],
-                    status: 'idle',
-                })
-            } catch (error) {
-                console.error(error);
-            }
         }
     }
 };
