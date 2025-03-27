@@ -18,7 +18,7 @@ module.exports = {
         if (!voiceChannel) {
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle("Ошибка")
+                .setTitle("❌ Ошибка")
                 .setDescription("Не вижу тебя, где ты?");
             return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
@@ -28,7 +28,7 @@ module.exports = {
         if (!player) {
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle("Ошибка")
+                .setTitle("❌ Ошибка")
                 .setDescription("Играть нечего!");
             return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
@@ -37,7 +37,7 @@ module.exports = {
         if (voiceChannel.id !== botVoiceChannel) {
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle("Ошибка")
+                .setTitle("❌ Ошибка")
                 .setDescription("Я в другой компании сейчас!");
             return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
@@ -63,7 +63,7 @@ module.exports = {
                 if (index < 1 || index > player.queue.size) {
                     const errorEmbed = new EmbedBuilder()
                         .setColor(0xFF0000)
-                        .setTitle("Ошибка")
+                        .setTitle("❌ Ошибка")
                         .setDescription(`Указанный индекс должен быть от 1 до ${player.queue.size}.`);
                     return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
                 }
@@ -87,7 +87,7 @@ module.exports = {
         } catch (error) {
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle("Ошибка")
+                .setTitle("❌ Ошибка")
                 .setDescription("У меня сломалась балалайка, подожди немного и попробуй снова.");
             await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
             console.error(error);

@@ -19,7 +19,7 @@ module.exports = {
         if (!voiceChannel) {
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle("Ошибка")
+                .setTitle("❌ Ошибка")
                 .setDescription("Не вижу тебя, ты где?");
             return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
@@ -30,7 +30,7 @@ module.exports = {
         if (!player) {
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle("Ошибка")
+                .setTitle("❌ Ошибка")
                 .setDescription("Играть нечего!");
             return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
@@ -39,7 +39,7 @@ module.exports = {
         if (voiceChannel.id !== botVoiceChannel) {
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle("Ошибка")
+                .setTitle("❌ Ошибка")
                 .setDescription("Я в другой компании сейчас!");
             return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
@@ -50,7 +50,7 @@ module.exports = {
             await player.setVolume(volume);
             const successEmbed = new EmbedBuilder()
                 .setColor(0xA020F0)
-                .setTitle("Громкость изменена")
+                .setTitle("🔊Громкость изменена")
                 .setDescription(`Громкость изменена до **${volume}**`)
                 .setFooter({ 
                     text: `Запустил: ${interaction.user.displayName}`,
@@ -60,7 +60,7 @@ module.exports = {
         } catch (error) {
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle("Ошибка")
+                .setTitle("❌ Ошибка")
                 .setDescription("У меня сломалась балалайка, подожди немного и попробуй снова.");
             await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
             console.error(error);

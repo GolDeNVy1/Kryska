@@ -13,7 +13,7 @@ module.exports = {
         if (!voiceChannel) {
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle("Ошибка")
+                .setTitle("❌ Ошибка")
                 .setDescription("Не вижу тебя, где ты?");
             return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
@@ -23,7 +23,7 @@ module.exports = {
         if (!player) {
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle("Ошибка")
+                .setTitle("❌ Ошибка")
                 .setDescription("Нет активного плеера!");
             return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
@@ -32,7 +32,7 @@ module.exports = {
         if (voiceChannel.id !== botVoiceChannel) {
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle("Ошибка")
+                .setTitle("❌ Ошибка")
                 .setDescription("Я в другой компании сейчас!");
             return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
         }
