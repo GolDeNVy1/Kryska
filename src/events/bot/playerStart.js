@@ -18,11 +18,11 @@ module.exports = {
 
         // Иконки платформ
         const platformIcons = {
-            youtube: 'https://i.imgur.com/AqKIfic.gif',
-            spotify: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGtwaXk4YjV5eTRkcHY2MmxhaWxxYWl6cmQwbnhmNHlueGxhOWJndCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EFGXDUBXcUd131C0CR/giphy.gif',
-            soundcloud: 'https://media4.giphy.com/media/kKJPSx14GFUyAJ8VoH/giphy.gif?cid=6c09b9528qnptbim13jbqmhnqjnys6fykuvk9zhhdphzfx26&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s',
-            applemusic: 'https://i.imgur.com/3Lm3s9i.gif',
-            deezer: 'https://i.imgur.com/q7UeOdK.gif',
+            youtube: 'https://cdn.discordapp.com/attachments/1131615683189407856/1337201276487860266/youtube.gif?ex=682087fc&is=681f367c&hm=71cfe86ec0dda0e73e2ecbe685784487aef1478e1b27aa9b2e1e732e67838980&',
+            spotify: 'https://cdn.discordapp.com/attachments/1131615683189407856/1337201275519107195/spotify.gif?ex=682087fc&is=681f367c&hm=38e51b797238b5e0587d829402afa4a3317f79df70e39a95379125cfa2bb967c&',
+            soundcloud: 'https://cdn.discordapp.com/attachments/1131615683189407856/1337201274759942277/soundcloud_slowed.gif?ex=682087fb&is=681f367b&hm=15942c5f9e58cd6b1d50458c8202c27c88e4b9dee97df4c226f409b6e5d5c0ad&',
+            applemusic: 'https://cdn.discordapp.com/attachments/1131615683189407856/1337201278144745492/apple.gif?ex=682087fc&is=681f367c&hm=f1a333620ea9bf6a5e51e192e36fdd01b2557689292cbfeea4a293fb115131f0&',
+            deezer: 'https://cdn.discordapp.com/attachments/1131615683189407856/1337201277095903322/deezer.gif?ex=682087fc&is=681f367c&hm=483412020dd766b9dd56f8be1671dc7525e08b502862b0e657574faf172c515d&',
             jiosaavn: 'https://i.imgur.com/N9Nt80h.png',
             default: 'https://thumbs2.imgbox.com/4f/9c/adRv6TPw_t.png'
         };
