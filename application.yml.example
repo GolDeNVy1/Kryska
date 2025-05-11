@@ -60,13 +60,14 @@ plugins:
     # Clients are queried in the order they are given (so the first client is queried first and so on...)
     clients:
       - ANDROID_MUSIC
+      - ANDROID
       - MUSIC
       - WEB
+      - MWEB
       - WEBEMBEDDED
       - TVHTML5EMBEDDED
-      - ANDROID_TESTSUITE
-      - ANDROID_LITE
-      - MEDIA_CONNECT
+      - ANDROID_VR
+      - TV
       - IOS
 lavalink:
   plugins:
