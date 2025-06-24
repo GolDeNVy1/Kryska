@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "@discordjs/voice": "^0.18.0",
-    "discord.js": "^14.17.2",
-    "dotenv": "^16.4.5",
+    "discord.js": "^14.19.3",
+    "dotenv": "^16.5.0",
     "kazagumo": "3.2.2",
     "shoukaku": "4.1.1"
   }
