@@ -30,11 +30,17 @@ const commandFolders = fs.readdirSync("./src/commands");
 
 const Nodes = [
     {
-        name: 'owo',
+        name: 'owo', // Локальная нода
         url: 'lavalink:2333',
         auth: 'youshallnotpass',
         secure: false,
     },
+    {
+        name: 'Public Node', // Публичная нода для Spotify
+        url: 'lava-v4.ajieblogs.eu.org:443',
+        auth: 'https://dsc.gg/ajidevserver',
+        secure: true,
+    }
 ];
 
 // Kazagumo

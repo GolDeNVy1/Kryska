@@ -28,13 +28,20 @@ module.exports = {
                 voiceId: voiceChannel.id,
                 volume: 100,
                 deaf: true,
+                nodeName: 'owo', // Всегда проигрываем на локальной ноде
             });
         }
 
         const botVoiceChannel = player.voiceId;
         if (voiceChannel.id !== botVoiceChannel) return interaction.followUp({ content: 'Я сейчас в другой компании!' });
 
-        let result = await kazagumo.search(query, { requester: interaction.member.user });
+        let result;
+        if (query.includes('spotify.com')) {
+            // Для Spotify ссылок используем публичную ноду, где настроен Premium
+            result = await kazagumo.search(query, { requester: interaction.member.user, nodeName: 'Public Node' });
+        } else {
+            result = await kazagumo.search(query, { requester: interaction.member.user });
+        }
 
         if (!result.tracks.length) return interaction.followUp("Прости, я не знаю как.");
 
@@ -52,10 +59,10 @@ module.exports = {
 
         const loadingEmbed = new EmbedBuilder()
             .setColor(0x3498db)
-            .setTitle(result.type === "PLAYLIST" 
-                ? `**Добавлено в репертуар:** ${result.playlistName} с \`${result.tracks.length}\` Треками` 
+            .setTitle(result.type === "PLAYLIST"
+                ? `**Добавлено в репертуар:** ${result.playlistName} с \`${result.tracks.length}\` Треками`
                 : `**Добавлено в репертуар:** ${result.tracks[0].title}`)
-            .setFooter({ 
+            .setFooter({
                 text: `Запустил: ${interaction.user.displayName}`,
                 iconURL: interaction.user.displayAvatarURL({ dynamic: true })
             });

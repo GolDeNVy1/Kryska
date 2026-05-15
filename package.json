@@ -4,6 +4,7 @@
     "discord.js": "^14.17.2",
     "dotenv": "^16.4.5",
     "kazagumo": "3.4.3",
-    "shoukaku": "^4.3.0"
+    "shoukaku": "^4.3.0",
+    "spotify-url-info": "^3.3.0"
   }
 }

@@ -43,6 +43,7 @@ module.exports = {
                 voiceId: voiceChannel.id,
                 volume: 100,
                 deaf: true,
+                nodeName: 'owo', // Всегда проигрываем на локальной ноде
             });
         } catch (error) {
             console.error("Ошибка создания плеера:", error);
@@ -64,7 +65,12 @@ module.exports = {
 
         let result;
         try {
-            result = await kazagumo.search(query, { requester: interaction.member.user });
+                if (query.includes('spotify.com')) {
+                    // Для Spotify ссылок используем публичную ноду, где настроен Premium
+                    result = await kazagumo.search(query, { requester: interaction.member.user, nodeName: 'Public Node' });
+                } else {
+                    result = await kazagumo.search(query, { requester: interaction.member.user });
+                }
         } catch (error) {
             console.error("Ошибка поиска треков:", error);
             const errorEmbed = new EmbedBuilder()
