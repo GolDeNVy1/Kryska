@@ -3,11 +3,13 @@ const {
     GatewayIntentBits, 
     Collection,
 } = require('discord.js');
+
 const fs = require('fs');
 const path = require('path');
 const { join } = path;
 const { Connectors } = require("shoukaku");
 const { Kazagumo } = require("kazagumo");
+// Используем встроенный коннектор Shoukaku 4.3.0 — он уже правильно слушает 'clientReady'
 
 const client = new Client({
     intents: [
@@ -46,51 +48,32 @@ const kazagumo = new Kazagumo(
         },
     },
     new Connectors.DiscordJS(client),
-    Nodes
+    Nodes,
+    // Shoukaku опции: автопереподключение если Lavalink ещё не готов при старте
+    {
+        reconnectTries: 15,       // 15 попыток
+        reconnectInterval: 3,     // каждые 3 секунды (~45с всего)
+        moveOnDisconnect: false,
+    }
 );
 
 kazagumo.shoukaku.on('ready', name => console.log(`Lavalink ${name}: Ready!`));
 kazagumo.shoukaku.on('error', (name, error) => console.error(`Lavalink ${name}: Error Caught`, error));
 kazagumo.shoukaku.on('close', (name, code, reason) => console.warn(`Lavalink ${name}: Closed, Code ${code}, Reason ${reason || 'No reason'}`));
 kazagumo.shoukaku.on('debug', (name, info) => console.debug(`Lavalink ${name}: Debug`, info));
-kazagumo.shoukaku.on('disconnect', name => {
-    console.warn(`Lavalink ${name}: Disconnected. Attempting to reconnect...`);
 
-    const node = kazagumo.shoukaku.nodes.get(name);
-
-    if (!node) {
-        console.error(`Node ${name} not found in kazagumo.shoukaku.nodes. Reinitializing node...`);
-        kazagumo.shoukaku.addNode({
-            name: name,
-            url: 'lavalink:2333',
-            auth: 'youshallnotpass',
-        });
+// Патч: Shoukaku 4.x не обрабатывает 400 Bad Request в sendServerUpdate когда
+// Discord присылает VOICE_SERVER_UPDATE после player.destroy() (race condition).
+// Перехватываем на уровне процесса и фильтруем этот конкретный кейс.
+process.on('unhandledRejection', (error) => {
+    if (error?.status === 400 && error?.path?.includes('/v4/sessions/')) {
+        console.warn('[Shoukaku] Игнорируем 400 Bad Request при sendServerUpdate — нормальное поведение после destroy().');
+        return;
     }
-
-    const reconnect = () => {
-        const node = kazagumo.shoukaku.nodes.get(name);
-
-        if (!node) {
-            console.error(`Node ${name} still not found. Retrying in 3 seconds...`);
-            setTimeout(reconnect, 3000);
-            return;
-        }
-
-        if (node.connected) {
-            console.log(`Node ${name} successfully reconnected.`);
-            return;
-        }
-
-        console.log(`Reconnecting to node ${name}...`);
-        node.connect()
-            .then(() => console.log(`Node ${name} reconnected successfully!`))
-            .catch(error => {
-                console.error(`Failed to reconnect to node ${name}:`, error);
-                setTimeout(reconnect, 3000);
-            });
-    };
-
-    reconnect();
+    console.error('[UnhandledRejection]', error);
+});
+kazagumo.shoukaku.on('disconnect', (name) => {
+    console.warn(`Lavalink ${name}: Отключился. Shoukaku автоматически выполняет переподключение...`);
 });
 
 // Main async function

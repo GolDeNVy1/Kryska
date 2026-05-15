@@ -1,7 +1,7 @@
 
 services:
   lavalink:
-    image: ghcr.io/lavalink-devs/lavalink:4.0.8-alpine
+    image: ghcr.io/lavalink-devs/lavalink:4.2.2-alpine
     container_name: lavalink
     restart: unless-stopped
     environment:
@@ -13,12 +13,21 @@ services:
     volumes:
       - ./application.yml:/opt/Lavalink/application.yml
       - ./plugins/:/opt/Lavalink/plugins/
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- --header='Authorization: youshallnotpass' http://localhost:2333/version || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
 
 
   bot:
     build: ./
     container_name: bot
     restart: unless-stopped
+    depends_on:
+      lavalink:
+        condition: service_healthy
     environment:
       - LAVA_HOST=lavalink
       - LAVA_PORT=2333

@@ -16,15 +16,15 @@ module.exports = {
             player.data.delete("disconnectTimeout");
         }
 
-        // Иконки платформ
+        // Иконки платформ (⚠️ Discord attachment URLs истекают! Замени на cdn.discordapp.com/emojis/ID.gif)
         const platformIcons = {
-            youtube: 'https://i.imgur.com/AqKIfic.gif',
-            spotify: 'https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGtwaXk4YjV5eTRkcHY2MmxhaWxxYWl6cmQwbnhmNHlueGxhOWJndCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EFGXDUBXcUd131C0CR/giphy.gif',
-            soundcloud: 'https://media4.giphy.com/media/kKJPSx14GFUyAJ8VoH/giphy.gif?cid=6c09b9528qnptbim13jbqmhnqjnys6fykuvk9zhhdphzfx26&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s',
-            applemusic: 'https://i.imgur.com/3Lm3s9i.gif',
-            deezer: 'https://i.imgur.com/q7UeOdK.gif',
-            jiosaavn: 'https://i.imgur.com/N9Nt80h.png',
-            default: 'https://thumbs2.imgbox.com/4f/9c/adRv6TPw_t.png'
+            youtube:    'https://cdn.discordapp.com/attachments/1131615683189407856/1337201276487860266/youtube.gif?ex=6a07aa3c&is=6a0658bc&hm=45a627a97e4a04ac9dc62a312f2f624f963f4965d5062aff7fef87683868b75f&',
+            spotify:    'https://cdn.discordapp.com/attachments/1131615683189407856/1337201275519107195/spotify.gif?ex=6a07aa3c&is=6a0658bc&hm=24b3e79f6656cd041cf2c63d469d86718a27366a5639df61a055b5889b0428c2&',
+            soundcloud: 'https://cdn.discordapp.com/attachments/1131615683189407856/1337201276005650442/soundcloud.gif?ex=6a07aa3c&is=6a0658bc&hm=a2f07f06646be9eb48e76624d515260e01919f45d1895302251f9aa71bbcc7b0&',
+            applemusic: 'https://cdn.discordapp.com/attachments/1131615683189407856/1337201278144745492/apple.gif?ex=6a07aa3c&is=6a0658bc&hm=c9b03f0e891fabf3e2a5befc4002a906b184832bc8eb10e9aac8a9a342ddc8db&',
+            deezer:     'https://cdn.discordapp.com/attachments/1131615683189407856/1337201277095903322/deezer.gif?ex=6a07aa3c&is=6a0658bc&hm=ecdbb483744f307b812a1a7238833ca4c518d8e9956902d68d78490951771151&',
+            jiosaavn:   'https://i.imgur.com/N9Nt80h.png',
+            default:    'https://thumbs2.imgbox.com/4f/9c/adRv6TPw_t.png'
         };
 
         // Цвета платформ

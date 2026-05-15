@@ -189,7 +189,7 @@ module.exports = {
                         player.data.delete("message");
                     }
             
-                    player.destroy();
+                    await player.destroy();
             
                     const stopEmbed = new EmbedBuilder()
                         .setColor(0xA020F0)
@@ -202,6 +202,20 @@ module.exports = {
             
                     await interaction.followUp({ embeds: [stopEmbed], ephemeral: true });
                 } catch (error) {
+                    // Игнорируем ошибку Bad Request при уничтожении сессии — это нормально
+                    if (error?.status === 400) {
+                        console.warn('Player уже уничтожен или сессия недействительна (400 Bad Request), игнорируем.');
+                        const stopEmbed = new EmbedBuilder()
+                            .setColor(0xA020F0)
+                            .setTitle("⏹️ Воспроизведение остановлено")
+                            .setDescription("Позовёте, когда станет скучно.")
+                            .setFooter({
+                                text: `Остановил: ${interaction.user.tag}`,
+                                iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+                            });
+                        try { await interaction.followUp({ embeds: [stopEmbed], ephemeral: true }); } catch (_) {}
+                        return;
+                    }
                     console.error(error);
             
                     const errorEmbed = new EmbedBuilder()
