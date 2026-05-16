@@ -1,11 +1,11 @@
 const { EmbedBuilder } = require('discord.js');
+const { getQueuePage } = require('../../functions/getQueuePage');
 
 
 module.exports = {
     name: 'interactionCreate',
     async execute(interaction, client) {
         if (!interaction.isButton()) return;
-        await interaction.deferReply({ ephemeral: true });
 
         const kazagumo = client.kazagumo;
 
@@ -19,7 +19,7 @@ module.exports = {
                     text: `Запустил: ${interaction.user.tag}`,
                     iconURL: interaction.user.displayAvatarURL({ dynamic: true })
                 });
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
 
         const player = kazagumo.players.get(interaction.guildId);
@@ -32,7 +32,7 @@ module.exports = {
                     text: `Запустил: ${interaction.user.tag}`,
                     iconURL: interaction.user.displayAvatarURL({ dynamic: true })
                 });
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
 
         const botVoiceChannel = player.voiceId;
@@ -45,8 +45,16 @@ module.exports = {
                     text: `Запустил: ${interaction.user.tag}`,
                     iconURL: interaction.user.displayAvatarURL({ dynamic: true })
                 });
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+            return interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }
+
+        if (interaction.customId.startsWith('queue_page_')) {
+            const page = parseInt(interaction.customId.split('_')[2]);
+            const queueData = getQueuePage(player, page);
+            return await interaction.update(queueData);
+        }
+
+        await interaction.deferReply({ ephemeral: true });
 
         switch (interaction.customId) {
             case 'pause_resume': 
@@ -373,57 +381,10 @@ module.exports = {
                 await interaction.followUp({ embeds: [repeatEmbed], ephemeral: true });
                 break;
 
-                case 'show_queue':
-                    const tracks = player.queue.slice(0, 30);
-                
-                    const queueEmbed = new EmbedBuilder()
-                        .setColor(0xff6347) 
-                        .setTitle('🎶 Мой репертуар на сегодня')
-                        .setThumbnail(player.queue.current.thumbnail || null)
-                        .setDescription(
-                            `**Сейчас играю:**\n[${player.queue.current.title}](${player.queue.current.uri})\n\n**Буду играть следующим:**`
-                        )
-                        .setFooter({ text: `Песен в очереди: ${player.queue.length}` });
-                
-                    if (tracks.length === 0) {
-                        queueEmbed.addFields({
-                            name: 'Очередь пуста',
-                            value: 'Добавьте новые песни!',
-                        });
-                    } else {
-                        const trackList = tracks.map((track, index) => {
-                            const trackTitle = track.title.length > 35
-                                ? `${track.title.substring(0, 35)}...`
-                                : track.title;
-                            return `\`${index + 1}.\` [${trackTitle}](${track.uri}) - ${track.author}: ${track.requester}`;
-                        });
-                
-                        let trackChunks = [];
-                        let currentChunk = '';
-                
-                        trackList.forEach(line => {
-                            if ((currentChunk + line + '\n').length <= 1024) {
-                                currentChunk += line + '\n';
-                            } else {
-                                trackChunks.push(currentChunk);
-                                currentChunk = line + '\n'; 
-                            }
-                        });
-                
-                        if (currentChunk) {
-                            trackChunks.push(currentChunk);
-                        }
-                
-                        trackChunks.forEach((chunk, index) => {
-                            queueEmbed.addFields({
-                                name: index === 0 ? 'Очередь:' : '‎',
-                                value: chunk,
-                            });
-                        });
-                    }
-                
-                    await interaction.followUp({ embeds: [queueEmbed], ephemeral: true });
-                    break;
+            case 'show_queue':
+                const queueData = getQueuePage(player, 0);
+                await interaction.followUp({ ...queueData, ephemeral: true });
+                break;
                 
 
             default:
