@@ -24,23 +24,23 @@ plugins:
       youtube: false # Enable YouTube lyrics source
       yandexmusic: false # Enable Yandex Music lyrics source
     spotify:
-      clientId: ""
-      clientSecret: ""
-      spDc: "your sp dc cookie" # the sp dc cookie used for accessing the spotify lyrics api
+      clientId: "${SPOTIFY_CLIENT_ID:}"
+      clientSecret: "${SPOTIFY_CLIENT_SECRET:}"
+      spDc: "${SPOTIFY_SP_DC:}" # the sp dc cookie used for accessing the spotify lyrics api
       countryCode: "US" # the country code you want to use for filtering the artists top tracks. See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
       playlistLoadLimit: 6 # The number of pages at 100 tracks each
       albumLoadLimit: 6 # The number of pages at 50 tracks each
       localFiles: true # Enable local files support with Spotify playlists. Please note `uri` & `isrc` will be `null` & `identifier` will be `"local"`
     applemusic:
       countryCode: "US" # the country code you want to use for filtering the artists top tracks and language. See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
-      mediaAPIToken: "" # apple music api token
+      mediaAPIToken: "${APPLE_MUSIC_TOKEN:}" # apple music api token
       playlistLoadLimit: 6 # The number of pages at 300 tracks each
       albumLoadLimit: 6 # The number of pages at 300 tracks each
     deezer:
-      masterDecryptionKey: "[ENCRYPTION_KEY]" # the master key used for decrypting the deezer tracks. (yes this is not here you need to get it from somewhere else)
-      arl: "" # Deezer ARL cookie required for playback
+      masterDecryptionKey: "${DEEZER_MASTER_KEY:}" # the master key used for decrypting the deezer tracks. (yes this is not here you need to get it from somewhere else)
+      arl: "${DEEZER_ARL:}" # Deezer ARL cookie required for playback
     yandexmusic:
-      accessToken: "your access token" # the token used for accessing the yandex music api. See https://github.com/TopiSenpai/LavaSrc#yandex-music
+      accessToken: "${YANDEX_ACCESS_TOKEN:}" # the token used for accessing the yandex music api. See https://github.com/TopiSenpai/LavaSrc#yandex-music
       playlistLoadLimit: 1 # The number of pages at 100 tracks each
       albumLoadLimit: 1 # The number of pages at 50 tracks each
       artistLoadLimit: 1 # The number of pages at 10 tracks each
@@ -78,7 +78,7 @@ lavalink:
       snapshot: false # set to true if you want to use snapshot builds.
   pluginsDir: './plugins'
   server:
-    password: "youshallnotpass"
+    password: "${LAVALINK_SERVER_PASSWORD:youshallnotpass}"
     sources:
       # The default Youtube source is now deprecated and won't receive further updates. Please use https://github.com/lavalink-devs/youtube-source#plugin instead.
       youtube: false
@@ -119,8 +119,8 @@ lavalink:
       #searchTriggersFail: true # Whether a search 429 should trigger marking the ip as failing
       #retryLimit: -1 # -1 = use default lavaplayer value | 0 = infinity | >0 = retry will happen this numbers times
       #youtubeConfig: # Required for avoiding all age restrictions by YouTube, some restricted videos still can be played without.
-      #email: "your account mail" # Email of Google account
-      #password: "your account password" # Password of Google account
+      #email: "${YOUTUBE_EMAIL:}" # Email of Google account
+      #password: "${YOUTUBE_PASSWORD:}" # Password of Google account
       #httpConfig: # Useful for blocking bad-actors from ip-grabbing your music node and attacking it, this way only the http proxy will be attacked
       #proxyHost: "localhost" # Hostname of the proxy, (ip or domain)
       #proxyPort: 3128 # Proxy port, 3128 is the default for squidProxy
