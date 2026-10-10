@@ -111,6 +111,7 @@ KazagumoInterfaces.SourceIDs['deezer'] = 'dz';
 const kazagumo = new Kazagumo(
     {
         defaultSearchEngine: 'deezer', // text search → dzsearch:; Spotify/Apple Music → trackResolver (Deezer → YouTube → SC)
+        defaultSource: 'dzsearch:',    // Override hardcoded kazagumo array check that forces ytsearch
         defaultYoutubeThumbnail: 'mqdefault',
         send: (guildId, payload) => {
             const guild = client.guilds.cache.get(guildId);

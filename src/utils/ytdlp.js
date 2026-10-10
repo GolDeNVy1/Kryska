@@ -9,7 +9,7 @@ const logger = require('./logger');
 const LOCAL_YTDLP = `${process.env.HOME}/.local/bin/yt-dlp`;
 const YTDLP_BIN = existsSync(LOCAL_YTDLP) ? LOCAL_YTDLP : 'yt-dlp';
 
-const YT_REGEX = /^(https?:\/\/)?(www\.|music\.|m\.)?(youtube\.com\/(watch\?.*v=|shorts\/|live\/)|youtu\.be\/)/;
+const YT_REGEX = /^(https?:\/\/)?(www\.|music\.|m\.)?(youtube\.com\/(watch\?.*v=|shorts\/|live\/|playlist\?)|youtu\.be\/)/;
 
 /**
  * Returns true if the query is a YouTube URL.
