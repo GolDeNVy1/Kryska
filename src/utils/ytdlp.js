@@ -39,15 +39,17 @@ async function resolveYoutube(url) {
 
         const info = JSON.parse(stdout);
 
-        // The selected format URL is in info.url for simple formats
-        const streamUrl = info.url;
+        const streamUrlRaw = info.url;
 
-        if (!streamUrl) {
+        if (!streamUrlRaw) {
             logger.warn('yt-dlp', `No stream URL in JSON for ${url}`);
             return null;
         }
 
         const uri = info.webpage_url || url;
+        // Tell Lavalink to stream it through our internal proxy!
+        const streamUrl = `http://bot:3000/stream?url=${encodeURIComponent(uri)}`;
+        
         let finalThumbnail = info.thumbnail || null;
         
         // Force YouTube hqdefault.jpg to avoid .webp or missing maxres issues in Discord

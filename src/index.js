@@ -14,6 +14,9 @@ const { searchYoutube } = require('./utils/ytdlp');
 
 require('dotenv').config();
 
+const { startProxy } = require('./utils/proxy');
+startProxy();
+
 // ─── Validate required env vars ───────────────────────────────────────────────
 const requiredEnv = ['DISCORD_TOKEN', 'DISCORD_CLIENT_ID'];
 for (const key of requiredEnv) {
