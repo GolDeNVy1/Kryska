@@ -1,69 +1,46 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
+const { validateCommand } = require('../../utils/checks');
+const { errorEmbed, successEmbed } = require('../../utils/embeds');
+const logger = require('../../utils/logger');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('volume')
         .setDescription('Играю громче или тише по твоему желанию')
+        .setDMPermission(false)
         .addIntegerOption(option =>
             option
                 .setName('volume')
-                .setDescription('Желаемая громкость')
+                .setDescription('Желаемая громкость (0–200)')
                 .setRequired(true)
                 .setMinValue(0)
-                .setMaxValue(200))
-        .setDMPermission(false),
+                .setMaxValue(200)),
+
     async execute(interaction, client) {
         await interaction.deferReply();
-        const voiceChannel = interaction.member.voice.channel;
 
-        if (!voiceChannel) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Не вижу тебя, ты где?");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
+        const ctx = await validateCommand(interaction, client.kazagumo);
+        if (!ctx) return;
 
-        const kazagumo = client.kazagumo;
-        const player = kazagumo.players.get(interaction.guildId);
-
-        if (!player) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Играть нечего!");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
-
-        const botVoiceChannel = player.voiceId;
-        if (voiceChannel.id !== botVoiceChannel) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Я в другой компании сейчас!");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
-
+        const { player } = ctx;
         const volume = interaction.options.getInteger('volume');
 
         try {
             await player.setVolume(volume);
-            const successEmbed = new EmbedBuilder()
-                .setColor(0xA020F0)
-                .setTitle("🔊Громкость изменена")
-                .setDescription(`Громкость изменена до **${volume}**`)
-                .setFooter({ 
-                    text: `Запустил: ${interaction.user.displayName}`,
-                    iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-                });
-            await interaction.followUp({ embeds: [successEmbed] });
+
+            await interaction.followUp({
+                embeds: [successEmbed(
+                    '🔊 Громкость изменена',
+                    `Громкость изменена до **${volume}%**`,
+                    interaction.user,
+                )],
+            });
         } catch (error) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("У меня сломалась балалайка, подожди немного и попробуй снова.");
-            await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-            console.error(error);
+            logger.error('Volume', 'Failed to set volume:', error);
+            await interaction.followUp({
+                embeds: [errorEmbed('У меня сломалась балалайка, подожди немного и попробуй снова.', interaction.user)],
+                ephemeral: true,
+            });
         }
-    }
+    },
 };

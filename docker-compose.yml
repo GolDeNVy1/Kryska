@@ -1,43 +1,41 @@
-
 services:
   lavalink:
     image: ghcr.io/lavalink-devs/lavalink:4.2.2-alpine
-    container_name: lavalink
+    container_name: kryska-lavalink
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      - _JAVA_OPTIONS=-Xmx6G
+      - _JAVA_OPTIONS=${LAVA_JAVA_OPTIONS:--Xmx2G}
       - SERVER_PORT=2333
-      - LAVALINK_SERVER_PASSWORD=youshallnotpass
+      - LAVALINK_SERVER_PASSWORD=${LAVA_PASSWORD:-youshallnotpass}
     networks:
       - lavalink_network
     volumes:
-      - ./application.yml:/opt/Lavalink/application.yml
+      - ./application.yml:/opt/Lavalink/application.yml:ro
       - ./plugins/:/opt/Lavalink/plugins/
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- --header='Authorization: youshallnotpass' http://localhost:2333/version || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- --header='Authorization: ${LAVA_PASSWORD:-youshallnotpass}' http://localhost:2333/version || exit 1"]
       interval: 5s
       timeout: 3s
       retries: 5
       start_period: 10s
 
-
   bot:
     build: ./
-    container_name: bot
+    container_name: kryska-bot
     restart: unless-stopped
     depends_on:
       lavalink:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
       - LAVA_HOST=lavalink
       - LAVA_PORT=2333
     networks:
       - lavalink_network
-      - frontend_network
 
 networks:
   lavalink_network:
-    name: lavalink_network
-
-  frontend_network:
-    driver: bridge
+    name: kryska_network

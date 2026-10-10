@@ -1,51 +1,31 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
+const { validateCommand } = require('../../utils/checks');
+const { errorEmbed, successEmbed } = require('../../utils/embeds');
+const logger = require('../../utils/logger');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('empty')
-        .setDescription('Очищает очередь'),
+        .setDescription('Очищает очередь')
+        .setDMPermission(false),
 
     async execute(interaction, client) {
         await interaction.deferReply();
-
-        const kazagumo = client.kazagumo;
-        const player = kazagumo.players.get(interaction.guildId);
-
-        if (!interaction.member.voice.channel) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Не вижу тебя, где ты?");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
-
-        if (!player) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Играть нечего!");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
+        const ctx = await validateCommand(interaction, client.kazagumo);
+        if (!ctx) return;
+        const { player } = ctx;
 
         try {
             player.queue.clear();
-
-            const successEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("🗑️ Репертуар очищен")
-                .setFooter({
-                    text: `Захотел: ${interaction.user.tag}`,
-                    iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
-                });
-
-            await interaction.followUp({ embeds: [successEmbed] });
+            await interaction.followUp({
+                embeds: [successEmbed('🗑️ Репертуар очищен', null, interaction.user)],
+            });
         } catch (error) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("У меня сломалась балалайка. Попробуй снова позже.");
-            await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-            console.error(error);
+            logger.error('Empty', 'Failed to clear queue:', error);
+            await interaction.followUp({
+                embeds: [errorEmbed('У меня сломалась балалайка. Попробуй снова позже.', interaction.user)],
+                ephemeral: true,
+            });
         }
     },
 };

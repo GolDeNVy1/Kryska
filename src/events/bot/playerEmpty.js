@@ -1,71 +1,84 @@
 const { EmbedBuilder, ActivityType } = require('discord.js');
 const { Events } = require('kazagumo');
+const logger = require('../../utils/logger');
 
 module.exports = {
     name: Events.PlayerEmpty,
-    async execute(client, player) {
-        let disconnectTimeout;
 
-        const lastMessage = player.data.get("message");
-        if (lastMessage && lastMessage.deletable) {
+    async execute(client, player) {
+        // Clean up progress interval
+        if (player.data.has('progressInterval')) {
+            clearInterval(player.data.get('progressInterval'));
+            player.data.delete('progressInterval');
+        }
+
+        // Clean up lyrics interval
+        if (player.data.has('lyricsInterval')) {
+            clearInterval(player.data.get('lyricsInterval'));
+            player.data.delete('lyricsInterval');
+        }
+
+        // Delete "Now Playing" message
+        const lastMessage = player.data.get('message');
+        if (lastMessage?.deletable) {
             try {
                 await lastMessage.delete();
             } catch (error) {
                 if (error.code === 10008) {
-                    console.warn(`Сообщение с ID ${lastMessage.id} уже удалено.`);
+                    logger.warn('PlayerEmpty', `Message ${lastMessage.id} already deleted.`);
                 } else {
-                    console.error('Ошибка при удалении сообщения "Now Playing":', error);
+                    logger.error('PlayerEmpty', 'Failed to delete Now Playing message:', error);
                 }
             }
-
-            player.data.delete("message");
+            player.data.delete('message');
         }
 
+        // Notify that queue is empty
         if (!player.queue.length) {
-            const embed = new EmbedBuilder()
-                .setColor(0xff0000)
-                .setDescription('Репертуар закончился, если хочешь закажи ещё песенку).');
-
             const channel = client.channels.cache.get(player.textId);
-            if (channel) await channel.send({ embeds: [embed] });
-
-            if (player.data.has("disconnectTimeout")) {
-                clearTimeout(player.data.get("disconnectTimeout"));
-                player.data.delete("disconnectTimeout");
+            if (channel) {
+                const embed = new EmbedBuilder()
+                    .setColor(0xFF0000)
+                    .setDescription('Репертуар закончился, если хочешь закажи ещё песенку).');
+                await channel.send({ embeds: [embed] });
             }
-            
-            disconnectTimeout = setTimeout(async () => {
-                if (!player.queue.length) {
-                    await player.destroy();
-            
-                    const embed = new EmbedBuilder()
-                        .setColor(0xff0000)
-                        .setDescription('Я пойду, у меня ещё много дел, позовёте когда будет скучно без музыки ;)');
-            
-                    const textChannel = client.channels.cache.get(player.textId);
-                    if (textChannel) await textChannel.send({ embeds: [embed] });
+
+            // Clear existing disconnect timer
+            if (player.data.has('disconnectTimeout')) {
+                clearTimeout(player.data.get('disconnectTimeout'));
+                player.data.delete('disconnectTimeout');
+            }
+
+            // Auto-disconnect after 60 seconds of inactivity
+            const timeout = setTimeout(async () => {
+                try {
+                    if (!player.queue.length) {
+                        client.selfDisconnecting.add(player.guildId);
+                        await player.destroy();
+                        const textChannel = client.channels.cache.get(player.textId);
+                        if (textChannel) {
+                            const embed = new EmbedBuilder()
+                                .setColor(0xFF0000)
+                                .setDescription('Я пойду, у меня ещё много дел, позовёте когда будет скучно без музыки ;)');
+                            await textChannel.send({ embeds: [embed] });
+                        }
+                    }
+                } catch (error) {
+                    logger.warn('PlayerEmpty', 'Auto-disconnect error:', error.message);
                 }
             }, 60000);
-            
-            player.data.set("disconnectTimeout", disconnectTimeout);
-            
-        }
-        await pickPresence();
-    
 
-    async function pickPresence () {
+            player.data.set('disconnectTimeout', timeout);
+        }
+
+        // Reset bot presence to idle
         try {
             await client.user.setPresence({
-                activities: [
-                    {
-                        name: "Ем сыр 🧀",
-                        type: ActivityType.Custom,
-                    },
-                ],
+                activities: [{ name: 'Ем сыр 🧀', type: ActivityType.Custom }],
                 status: 'idle',
-            })
+            });
         } catch (error) {
-            console.error(error);
+            logger.error('PlayerEmpty', 'Failed to reset presence:', error);
         }
-    }
-}};
+    },
+};

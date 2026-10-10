@@ -1,62 +1,62 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
+const { validateCommand } = require('../../utils/checks');
+const { errorEmbed, successEmbed } = require('../../utils/embeds');
+const logger = require('../../utils/logger');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("stop")
-        .setDescription("Заканчиваю свой концерт"),
+        .setName('stop')
+        .setDescription('Заканчиваю свой концерт')
+        .setDMPermission(false),
+
     async execute(interaction, client) {
         await interaction.deferReply();
 
-        const kazagumo = client.kazagumo;
-        const player = kazagumo.players.get(interaction.guildId);
+        const ctx = await validateCommand(interaction, client.kazagumo);
+        if (!ctx) return;
 
-        if (!interaction.member.voice.channel) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Не вижу тебя, где ты?");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
-
-        if (!player) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Играть нечего!");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
+        const { player } = ctx;
 
         try {
-            const lastMessage = player.data.get("message");
+            // Clean up "Now Playing" message
+            const lastMessage = player.data.get('message');
             if (lastMessage) {
                 try {
                     await lastMessage.delete();
-                } catch (error) {
-                    console.error('Ошибка при удалении сообщения "Now Playing":', error);
+                } catch (deleteError) {
+                    logger.warn('Stop', 'Could not delete Now Playing message:', deleteError.message);
                 }
-                player.data.delete("message");
+                player.data.delete('message');
             }
 
+            client.selfDisconnecting.add(interaction.guildId);
             await player.destroy();
 
-            const successEmbed = new EmbedBuilder()
-                .setColor(0xA020F0)
-                .setTitle("🎼 Концерт окончен")
-                .setDescription(`Ладно, с вас хватит, <@${interaction.user.id}>, ещё увидимся 😉`)
-                .setFooter({ 
-                    text: `Запустил: ${interaction.user.displayName}`,
-                    iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-                });
-            await interaction.followUp({ embeds: [successEmbed] });
+            await interaction.followUp({
+                embeds: [successEmbed(
+                    '🎼 Концерт окончен',
+                    `Ладно, с вас хватит, <@${interaction.user.id}>, ещё увидимся 😉`,
+                    interaction.user,
+                )],
+            });
         } catch (error) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("У меня сломалась балалайка, подожди немного и попробуй снова.");
-            await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-            console.error(error);
+            // Ignore 400 Bad Request when session is already destroyed
+            if (error?.status === 400) {
+                logger.warn('Stop', 'Player already destroyed (400 Bad Request), ignoring.');
+                try {
+                    await interaction.followUp({
+                        embeds: [successEmbed('⏹️ Воспроизведение остановлено', 'Позовёте, когда станет скучно.', interaction.user)],
+                        ephemeral: true,
+                    });
+                } catch (_) { /* noop */ }
+                return;
+            }
+
+            logger.error('Stop', 'Failed to stop player:', error);
+            await interaction.followUp({
+                embeds: [errorEmbed('У меня сломалась балалайка, подожди немного и попробуй снова.', interaction.user)],
+                ephemeral: true,
+            });
         }
-    }
+    },
 };
-
-

@@ -1,111 +1,122 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
+const { validateCommand } = require('../../utils/checks');
+const { errorEmbed, infoEmbed } = require('../../utils/embeds');
+const logger = require('../../utils/logger');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play-ext')
-        .setDescription('Усовершенствованная команда на воспроизведение')
+        .setDescription('Усовершенствованная команда — выбери платформу для поиска')
         .setDMPermission(false)
         .addStringOption(option =>
-            option.setName('source')
-                .setDescription('Выбери сервис')
+            option
+                .setName('source')
+                .setDescription('Выбери сервис для поиска')
                 .setRequired(true)
                 .addChoices(
-                    { name: 'Youtube', value: 'youtube' },
+                    { name: 'YouTube', value: 'youtube' },
                     { name: 'SoundCloud', value: 'soundcloud' },
                 ))
         .addStringOption(option =>
             option
                 .setName('url')
-                .setDescription('Ссылка на музыку')
+                .setDescription('Ссылка на музыку или запрос')
                 .setRequired(true)),
 
     async execute(interaction, client) {
         await interaction.deferReply({ ephemeral: false });
+
         const query = interaction.options.getString('url');
-        const repeatmode = interaction.options.getString('source');
-
+        const source = interaction.options.getString('source');
         const kazagumo = client.kazagumo;
-        const voiceChannel = interaction.member.voice.channel;
 
-        if (!voiceChannel) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Не вижу тебя, где ты?");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+        const ctx = await validateCommand(interaction, kazagumo, { requirePlayer: false });
+        if (!ctx) return;
+
+        const { voiceChannel } = ctx;
+        let { player } = ctx;
+
+        // Create player if it doesn't exist
+        if (!player) {
+            try {
+                player = await kazagumo.createPlayer({
+                    guildId: interaction.guild.id,
+                    textId: interaction.channel.id,
+                    voiceId: voiceChannel.id,
+                    volume: 100,
+                    deaf: true,
+                    nodeName: 'owo',
+                });
+            } catch (error) {
+                logger.error('PlayExt', 'Failed to create player:', error);
+                return interaction.followUp({
+                    embeds: [errorEmbed('Не удалось подключиться к голосовому каналу.', interaction.user)],
+                    ephemeral: true,
+                });
+            }
         }
 
-        let player;
-        try {
-            player = await kazagumo.createPlayer({
-                guildId: interaction.guild.id,
-                textId: interaction.channel.id,
-                voiceId: voiceChannel.id,
-                volume: 100,
-                deaf: true,
-                nodeName: 'owo', // Всегда проигрываем на локальной ноде
-            });
-        } catch (error) {
-            console.error("Ошибка создания плеера:", error);
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Не удалось подключиться к голосовому каналу.");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
-
-        const botVoiceChannel = player.voiceId;
-        if (voiceChannel.id !== botVoiceChannel) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Я в другом канале!");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
-
+        // Build search query with selected engine
         let result;
         try {
-                if (query.includes('spotify.com')) {
-                    // Для Spotify ссылок используем публичную ноду, где настроен Premium
-                    result = await kazagumo.search(query, { requester: interaction.member.user, nodeName: 'Public Node' });
-                } else {
-                    result = await kazagumo.search(query, { requester: interaction.member.user });
+            // Resolve shortened URLs (like link.deezer.com)
+            let finalQuery = query;
+            if (query.match(/^https?:\/\/(link\.deezer\.com|deezer\.page\.link|spotify\.link|on\.soundcloud\.com)\//)) {
+                try {
+                    const res = await fetch(query, { method: 'HEAD' });
+                    finalQuery = res.url;
+                } catch (err) {
+                    logger.warn('PlayExt', `Failed to resolve short URL: ${query}`);
                 }
+            }
+
+            const searchQuery = finalQuery;
+            const isSpotifyUrl = searchQuery.includes('spotify.com') || searchQuery.includes('spotify.link');
+
+            if (isSpotifyUrl) {
+                const { searchSpotify } = require('../../utils/spotify');
+                result = await searchSpotify(searchQuery, kazagumo, interaction.member.user);
+            } else {
+                const searchOptions = { 
+                    requester: interaction.member.user,
+                    engine: source === 'soundcloud' ? 'soundcloud' : 'youtube_music',
+                    nodeName: 'owo'
+                };
+                result = await kazagumo.search(searchQuery, searchOptions);
+            }
         } catch (error) {
-            console.error("Ошибка поиска треков:", error);
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Не удалось найти треки. Попробуйте снова.");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+            logger.error('PlayExt', 'Search failed:', error);
+            return interaction.followUp({
+                embeds: [errorEmbed('Не удалось найти треки. Попробуй снова.', interaction.user)],
+                ephemeral: true,
+            });
         }
 
         if (!result.tracks.length) {
-            const noTrackEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Извини, я не знаю, как это играть :'(.");
-            return interaction.followUp({ embeds: [noTrackEmbed], ephemeral: true });
-        }
-
-        if (result.type === "PLAYLIST") {
-            for (let track of result.tracks) player.queue.add(track);
-        } else {
-            player.queue.add(result.tracks[0]);
-        }
-
-        if (!player.playing && !player.paused) player.play();
-
-        const loadingEmbed = new EmbedBuilder()
-            .setColor(0x00ff00)
-            .setTitle(result.type === "PLAYLIST"
-                ? `**Добавлено в очередь: **${result.playlistName}`
-                : `**Добавлено в очередь: ** ${result.tracks[0].title}`)
-            .setFooter({
-                text: `Захотел: ${interaction.user.displayName}`,
-                iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+            return interaction.followUp({
+                embeds: [errorEmbed('Извини, я не знаю, как это играть :(', interaction.user)],
+                ephemeral: true,
             });
+        }
 
-        await interaction.followUp({ embeds: [loadingEmbed] });
-    }
+        const tracks = result.type === 'PLAYLIST' ? result.tracks : [result.tracks[0]];
+        for (const track of tracks) {
+            if (result._isSpotifyBypass) {
+                track.sourceName = 'spotify';
+            }
+            player.queue.add(track);
+        }
+
+        if (!player.playing && !player.paused) {
+            player.play();
+        }
+
+        const title = result.type === 'PLAYLIST'
+            ? `**Добавлено в очередь:** ${result.playlistName}`
+            : `**Добавлено в очередь:** ${result.tracks[0].title}`;
+
+        await interaction.followUp({
+            embeds: [infoEmbed(title, null, interaction.user)],
+        });
+    },
 };

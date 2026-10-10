@@ -1,4 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
+const { validateCommand } = require('../../utils/checks');
+const { errorEmbed, successEmbed } = require('../../utils/embeds');
+const logger = require('../../utils/logger');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,66 +12,35 @@ module.exports = {
     async execute(interaction, client) {
         await interaction.deferReply();
 
-        const voiceChannel = interaction.member.voice.channel;
-        if (!voiceChannel) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Не вижу тебя, где ты?");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
+        const ctx = await validateCommand(interaction, client.kazagumo);
+        if (!ctx) return;
 
-        const kazagumo = client.kazagumo;
-        const player = kazagumo.players.get(interaction.guildId);
-        if (!player) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Нет активного плеера!");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
-
-        const botVoiceChannel = player.voiceId;
-        if (voiceChannel.id !== botVoiceChannel) {
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Я в другой компании сейчас!");
-            return interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-        }
+        const { player } = ctx;
 
         try {
             const previousTrack = player.getPrevious();
-            if (previousTrack) {
-                await player.play(player.getPrevious(true));
-
-                const previousTrackEmbed = new EmbedBuilder()
-                    .setColor(0xA020F0)
-                    .setTitle("⏮ Воспроизведение предыдущего трека")
-                    .setDescription(`Теперь играет: **${previousTrack.title}**`)
-                    .setFooter({
-                        text: `Запросил: ${interaction.user.displayName}`,
-                        iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-                    });
-
-                await interaction.followUp({ embeds: [previousTrackEmbed] });
-            } else {
-                const noPreviousTrackEmbed = new EmbedBuilder()
-                    .setColor(0xFF0000)
-                    .setTitle("❌ Ошибка")
-                    .setDescription("Извини, я не помню, что было до этого. Отправь ссылку заново!");
-
-                await interaction.followUp({ embeds: [noPreviousTrackEmbed], ephemeral: true });
+            if (!previousTrack) {
+                return interaction.followUp({
+                    embeds: [errorEmbed('Извини, я не помню, что было до этого. Отправь ссылку заново!', interaction.user)],
+                    ephemeral: true,
+                });
             }
+
+            await player.play(player.getPrevious(true));
+
+            await interaction.followUp({
+                embeds: [successEmbed(
+                    '⏮ Воспроизведение предыдущего трека',
+                    `Теперь играет: **${previousTrack.title}**`,
+                    interaction.user,
+                )],
+            });
         } catch (error) {
-            console.error(error);
-
-            const errorEmbed = new EmbedBuilder()
-                .setColor(0xFF0000)
-                .setTitle("❌ Ошибка")
-                .setDescription("Произошла ошибка при попытке воспроизвести предыдущий трек. Попробуйте ещё раз.");
-
-            await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
+            logger.error('Previous', 'Failed to play previous track:', error);
+            await interaction.followUp({
+                embeds: [errorEmbed('Произошла ошибка при попытке воспроизвести предыдущий трек.', interaction.user)],
+                ephemeral: true,
+            });
         }
-    }
+    },
 };

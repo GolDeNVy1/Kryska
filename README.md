@@ -16,56 +16,67 @@
 
 ---
 
-### 🐾 **Kryska’s Rules of Fun**
+## 🎉 v2.0 is here — the rat got an upgrade!
 
-- 🎵 High-quality music playback from platforms like Spotify, YouTube, Apple Music, and more.  
-- ⚡ Lightning-fast commands to keep the vibe going.  
-- 🔧 Highly customizable settings for your server's unique needs.  
-- 🐭 Adorable Slash commands that are as cheeky as Kryska herself.  
+> Kryska just crawled out of the walls with a shiny new set of tricks. Here's what's new in **v2.0**:
+
+- 🔕 **Silent messages** — all bot messages are now sent without notification pings. No more ding-ding at 3AM.
+- 🔍 **New search priority order** — Deezer → YouTube (yt-dlp) → SoundCloud. More songs found, fewer failures.
+- 🔗 **Playlist names are clickable links** — tap the playlist name in the "Added to queue" message to open it directly.
+- 🛠️ **yt-dlp updated** — fixed broken YouTube audio after Google's API changes. The rat is back on track.
+- 🐛 **Various stability fixes** — resolver improvements, better error handling, and a smoother overall experience.
+
+---
+
+### 🐾 **Kryska's Rules of Fun**
+
+- 🎵 High-quality music playback from platforms like Spotify, YouTube, Apple Music, Deezer, SoundCloud and more.
+- ⚡ Lightning-fast commands to keep the vibe going.
+- 🔧 Highly customizable settings for your server's unique needs.
+- 🐭 Adorable Slash commands that are as cheeky as Kryska herself.
 
 ---
 
 ### 🎛️ **What You Need to Get Started**
 
-- Node.js v16+ (Kryska won’t work without her cheese... or Node.js).  
-- A Discord Token (grab one [here](https://discord.com/developers/applications)).  
-- (Optional) API keys for Spotify, Apple Music, Deezer, or Yandex Music for full platform support.  
-- A Lavalink server for audio playback (requires Java v13+).  
+- Node.js v20+ (Kryska won't work without her cheese... or Node.js).
+- A Discord Token (grab one [here](https://discord.com/developers/applications)).
+- (Optional) API keys for Spotify, Apple Music, Deezer, or Yandex Music for full platform support.
+- A Lavalink server for audio playback (requires Java v17+).
 
 ---
 
 ### 🛠️ **How to Set Kryska Loose**
 
-#### 🐁 **Option 1: The Docker Wheel (Recommended)**  
-1. [Install Docker](https://www.docker.com/get-started) on your system.  
-2. [Install Git](https://git-scm.com/downloads) on your system. 
-3. Clone Kryska’s repository:  
+#### 🐁 **Option 1: The Docker Wheel (Recommended)**
+1. [Install Docker](https://www.docker.com/get-started) on your system.
+2. [Install Git](https://git-scm.com/downloads) on your system.
+3. Clone Kryska's repository:
    ```bash
    git clone https://github.com/GolDeNVy1/Kryska.git
    ```
-4. Fill out the config files (`application.yml` and `.env`) with your credentials.  
-5. Let Kryska run wild:  
+4. Fill out the config files (`application.yml` and `.env`) with your credentials.
+5. Let Kryska run wild:
    ```bash
    ./entrypoint.sh
    ```
-6. And finnaly I recomend you to clean your docker when you dont use it with command
+6. And finally I recommend you to clean your docker when you don't use it:
    ```bash
    ./clean_your_docker.sh
    ```
 
-#### 🐁 **Option 2: Classic Setup (For the Brave)**  
-1. Clone the repository:  
+#### 🐁 **Option 2: Classic Setup (For the Brave)**
+1. Clone the repository:
    ```bash
    git clone https://github.com/GolDeNVy1/Kryska.git
    ```
-2. Install dependencies:  
+2. Install dependencies:
    ```bash
    npm install
    ```
-3. Build and start Kryska:  
+3. Start Kryska:
    ```bash
-   npm run build  
-   npm run start
+   node src/index.js
    ```
 
 ---
@@ -76,4 +87,4 @@ If you run into trouble or just want to hang out with Kryska and her team, join 
 ---
 
 ### ❤️ **License**
-Kryska is distributed under the MIT License. See `LICENSE` for details.  
+Kryska is distributed under the MIT License. See `LICENSE` for details.
